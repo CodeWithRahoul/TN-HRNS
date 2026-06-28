@@ -1607,3 +1607,20 @@ body {
   font-size: 0.95rem;
   color: var(--text-dark);
 }
+/* Page content styling */
+.page-content {
+  min-height: 60vh;
+}
+
+.page-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.page-description {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}

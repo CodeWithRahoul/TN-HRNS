@@ -18,11 +18,11 @@ export default function Header() {
         </div>
         <ul className="nav-links">
           <li><a onClick={() => navigate('/')}>Home</a></li>
-          <li><a onClick={() => navigate('/')}>Features</a></li>
-          <li><a onClick={() => navigate('/')}>Careers</a></li>
-          <li><a onClick={() => navigate('/')}>Contact</a></li>
+          <li><a onClick={() => navigate('/features')}>Features</a></li>
+          <li><a onClick={() => navigate('/careers')}>Careers</a></li>
+          <li><a onClick={() => navigate('/contact')}>Contact</a></li>
         </ul>
-        {/* Removed nav-actions (Login/Sign Up buttons) */}
+        {/* Login/Sign Up removed as per earlier request */}
       </div>
     </header>
   );
