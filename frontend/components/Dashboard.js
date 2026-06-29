@@ -20,10 +20,15 @@ export default function Dashboard() {
   return (
     <div className="dashboard-page">
       <div className="container">
-        <div className="dashboard-header">
+        {/* ✅ Dashboard Header – now with clear visibility */}
+        <div className="dashboard-header" style={{ background: 'rgba(255,255,255,0.7)', borderRadius: '16px', padding: '24px', backdropFilter: 'blur(4px)' }}>
           <div>
-            <h1 className="dashboard-welcome">Welcome back, Ayesha! 👋</h1>
-            <p className="dashboard-subtitle">Here's what's happening with your applications.</p>
+            <h1 className="dashboard-welcome" style={{ color: 'var(--text-primary)' }}>
+              Welcome back, Ayesha! 😊
+            </h1>
+            <p className="dashboard-subtitle" style={{ color: 'var(--text-dark)' }}>
+              Here's what's happening with your applications.
+            </p>
           </div>
           <div className="dashboard-actions">
             <button className="btn btn-primary" onClick={() => router.push('/apply')}>
