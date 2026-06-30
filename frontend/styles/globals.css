@@ -1624,3 +1624,120 @@ body {
   color: var(--text-muted);
   margin-bottom: 24px;
 }
+/* ── HR Layout Sidebar ── */
+.hr-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.hr-body {
+  display: flex;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.hr-sidebar {
+  width: 260px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 24px 0;
+  flex-shrink: 0;
+  min-height: calc(100vh - 140px);
+}
+
+.sidebar-profile {
+  text-align: center;
+  padding: 0 20px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 16px;
+}
+
+.profile-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--bg-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin: 0 auto 8px;
+}
+
+.profile-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.profile-role {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 12px;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: 12px;
+  color: var(--text-dark);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.sidebar-link:hover {
+  background: rgba(0, 66, 61, 0.06);
+}
+
+.sidebar-link.active {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 66, 61, 0.2);
+}
+
+.sidebar-link i {
+  width: 20px;
+  text-align: center;
+}
+
+.hr-main {
+  flex: 1;
+  padding: 24px 32px 40px;
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .hr-sidebar {
+    width: 72px;
+    padding: 16px 0;
+  }
+  .sidebar-profile {
+    display: none;
+  }
+  .sidebar-link span {
+    display: none;
+  }
+  .sidebar-link {
+    justify-content: center;
+    padding: 12px;
+  }
+  .hr-main {
+    padding: 16px;
+  }
+}
