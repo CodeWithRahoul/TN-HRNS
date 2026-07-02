@@ -82,7 +82,7 @@ export default function Features() {
 
         .features-subtitle {
           font-size: 1.1rem;
-          color: var(--text-muted);
+          color: #1f2928;
           line-height: 1.6;
         }
 

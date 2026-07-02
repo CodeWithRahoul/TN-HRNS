@@ -87,7 +87,7 @@ export default function Careers() {
 
         .careers-subtitle {
           font-size: 1.1rem;
-          color: var(--text-muted);
+          color: #2f4946;
           line-height: 1.6;
         }
 
