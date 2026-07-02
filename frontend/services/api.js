@@ -38,45 +38,76 @@ const delay = (ms = 800) => new Promise(resolve => setTimeout(resolve, ms));
 const handleMockResponse = async (endpoint, options) => {
   await delay(600);
 
-  // Mock Login with Role Validation
+  // ─── Mock Login ──────────────────────────────────────────────
   if (endpoint.includes('/auth/login')) {
     const body = JSON.parse(options.body);
     const { email, password, role } = body;
 
+    // Role-based validation
     if (role === 'HR' && !email.toLowerCase().includes('hr')) {
       throw new Error('Invalid credentials for HR role. Please use an HR email.');
     }
     if (role === 'Employee' && email.toLowerCase().includes('hr')) {
       throw new Error('Invalid credentials for Employee role. Please use a valid employee email.');
     }
+
+    // ✅ Password validation – only 'password123' works in mock mode
+    if (password !== 'password123') {
+      throw new Error('Invalid email or password. Please try again.');
+    }
+
     if (!email || !password) {
       throw new Error('Email and password are required.');
     }
-    return { success: true, token: 'mock-jwt-token', user: { role } };
+
+    return {
+      success: true,
+      token: 'mock-jwt-token',
+      user: { role, name: email.split('@')[0] }
+    };
   }
 
+  // ─── Mock Register ────────────────────────────────────────────
   if (endpoint.includes('/auth/register')) {
-    return { success: true, token: 'mock-jwt-token', user: { role: 'Employee' } };
+    const body = JSON.parse(options.body);
+    return {
+      success: true,
+      token: 'mock-jwt-token',
+      user: { role: 'Employee', name: body.fullName || body.name || 'User' }
+    };
   }
+
+  // ─── Candidate Submit ────────────────────────────────────────
   if (endpoint.includes('/candidate/submit') && options.method === 'POST') {
     return { success: true, applicationId: 'mock-app-123' };
   }
+
+  // ─── Candidate Status ────────────────────────────────────────
   if (endpoint.includes('/candidate/')) {
     const app = mockData.applications[0];
     return { success: true, data: app };
   }
+
+  // ─── Candidate List ──────────────────────────────────────────
   if (endpoint.includes('/candidate')) {
     return { success: true, data: mockData.applications };
   }
+
+  // ─── Document Upload ─────────────────────────────────────────
   if (endpoint.includes('/document/upload')) {
     return { success: true, message: 'Files uploaded successfully' };
   }
+
+  // ─── Interview Details ───────────────────────────────────────
   if (endpoint.includes('/interview/')) {
     return { success: true, data: mockData.applications[0].interview };
   }
+
+  // ─── Schedule Interview ──────────────────────────────────────
   if (endpoint.includes('/interview/schedule')) {
     return { success: true, message: 'Interview scheduled successfully' };
   }
+
   return { success: true, data: { message: 'Mock response' } };
 };
 
