@@ -27,18 +27,23 @@ export default function CandidateDetailView({ candidate, onBack }) {
     },
     submittedTask: {
       title: 'Design DevConnect web design',
-      submittedOn: '15 Jun, 2026 at 06:00 PM',
-      figmaLink: 'figma.com/sara/devconnect',
+      submittedOn: '16 Jun, 2026 at 06:00 PM',
+      figmaLink: 'figno.com/sara/devconnect',
       notes: "I've implemented the component according to the design specifications using Tailwind CSS and React Context for state management.",
       files: [{ name: 'Design document.pdf', size: '1.1 MB' }],
     },
+    review: {
+      title: 'Technical Assessment',
+      description: 'Demonstrated strong frontend development skills with a good understanding of HTML, CSS, JavaScript, and modern frameworks. Completed technical tasks effectively.',
+      rating: '8.5 ⭐'
+    }
   };
 
   const colors = {
     primary: '#007A7C',
     primaryDark: '#06504A',
     sidebar: '#008080',
-    border: '#020a14',
+    border: '#e2e8e8',
     textDark: '#1A1A1A',
     textGray: '#666666',
     textMuted: '#8a8f98',
@@ -47,6 +52,7 @@ export default function CandidateDetailView({ candidate, onBack }) {
     lightTeal: '#E8F5F5',
     success: '#2F8A4B',
     danger: '#dc3545',
+    warning: '#f2a900',
     skillBg: '#DCEFEF',
     skillText: '#007A7C',
   };
@@ -321,9 +327,6 @@ export default function CandidateDetailView({ candidate, onBack }) {
                   </p>
                 </div>
               </div>
-
-              {/* ─── TAB INDICATOR REMOVED FROM MAIN CONTENT ─── */}
-              {/* The tabs are now only in the sidebar */}
 
               {/* ─── TAB CONTENT ──────────────────────────────────── */}
 
@@ -653,14 +656,15 @@ export default function CandidateDetailView({ candidate, onBack }) {
                 </div>
               )}
 
-              {/* 3. SUBMITTED TASK */}
+              {/* 3. SUBMITTED TASK — professionally styled to match the figure */}
               {activeTab === 'submitted' && (
                 <div>
+                  {/* Task submission card */}
                   <div style={{
                     background: colors.lightTeal,
                     borderRadius: '12px',
                     padding: '16px 20px',
-                    marginBottom: '20px',
+                    marginBottom: '24px',
                     borderLeft: `4px solid ${colors.primary}`,
                   }}>
                     <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: colors.textDark }}>
@@ -672,6 +676,7 @@ export default function CandidateDetailView({ candidate, onBack }) {
                     </p>
                   </div>
 
+                  {/* Details */}
                   <div style={{ marginBottom: '16px' }}>
                     <p style={{ fontSize: '13px', fontWeight: 600, color: colors.textDark, margin: '0 0 4px 0' }}>
                       <i className="fas fa-link" style={{ marginRight: '6px', color: colors.primary }}></i>
@@ -682,7 +687,7 @@ export default function CandidateDetailView({ candidate, onBack }) {
                     </a>
                   </div>
 
-                  <div style={{ marginBottom: '16px' }}>
+                  <div style={{ marginBottom: '20px' }}>
                     <p style={{ fontSize: '13px', fontWeight: 600, color: colors.textDark, margin: '0 0 4px 0' }}>
                       Additional notes
                     </p>
@@ -691,43 +696,121 @@ export default function CandidateDetailView({ candidate, onBack }) {
                     </p>
                   </div>
 
-                  {info.submittedTask.files.map((file, idx) => (
-                    <div key={idx} style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      padding: '10px 14px',
-                      background: '#f8f9fa',
-                      borderRadius: '10px',
-                      marginBottom: '8px',
-                    }}>
-                      <div>
-                        <p style={{ margin: 0, fontSize: '14px', color: colors.textDark }}>
-                          <i className="fas fa-file-pdf" style={{ marginRight: '8px', color: colors.danger }}></i>
-                          {file.name}
-                        </p>
-                      </div>
-                      <span style={{ fontSize: '12px', color: colors.textGray }}>{file.size}</span>
+                  {/* File attachment */}
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    padding: '10px 14px',
+                    background: '#f8f9fa',
+                    borderRadius: '10px',
+                    marginBottom: '28px',
+                    border: `1px solid ${colors.border}`,
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <i className="fas fa-file-pdf" style={{ fontSize: '18px', color: colors.danger }}></i>
+                      <span style={{ fontSize: '14px', color: colors.textDark }}>Design document.pdf</span>
                     </div>
-                  ))}
+                    <span style={{ fontSize: '12px', color: colors.textGray }}>1.1 MB</span>
+                  </div>
 
-                  <div style={{ marginTop: '20px', display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                  {/* Separator */}
+                  <div style={{
+                    borderTop: `2px solid ${colors.border}`,
+                    marginBottom: '24px',
+                  }}></div>
+
+                  {/* Reviews by Team Lead */}
+                  <div>
+                    <h4 style={{
+                      fontSize: '13px',
+                      fontWeight: 700,
+                      color: colors.textMuted,
+                      letterSpacing: '0.5px',
+                      margin: '0 0 16px 0',
+                    }}>
+                      REVIEWS BY TEAM LEAD
+                    </h4>
+
+                    <div style={{
+                      background: '#f8f9fa',
+                      borderRadius: '12px',
+                      padding: '18px 20px',
+                      border: `1px solid ${colors.border}`,
+                    }}>
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '8px',
+                      }}>
+                        <h5 style={{
+                          margin: 0,
+                          fontSize: '14px',
+                          fontWeight: 600,
+                          color: colors.textDark,
+                        }}>
+                          &lt; {info.review.title}
+                        </h5>
+                        <span style={{
+                          fontSize: '18px',
+                          fontWeight: 700,
+                          color: colors.warning,
+                        }}>
+                          {info.review.rating}
+                        </span>
+                      </div>
+                      <p style={{
+                        margin: 0,
+                        fontSize: '13px',
+                        color: colors.textGray,
+                        lineHeight: 1.6,
+                      }}>
+                        {info.review.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div style={{
+                    display: 'flex',
+                    gap: '12px',
+                    flexWrap: 'wrap',
+                    marginTop: '28px',
+                    paddingTop: '8px',
+                  }}>
                     <button style={{
-                      padding: '10px 24px',
-                      background: colors.danger,
-                      color: '#fff',
-                      border: 'none',
+                      padding: '10px 28px',
+                      background: '#fff',
+                      color: colors.danger,
+                      border: `1.5px solid ${colors.danger}`,
                       borderRadius: '10px',
                       fontWeight: 600,
                       fontSize: '13px',
                       cursor: 'pointer',
                       fontFamily: "'Poppins', sans-serif",
+                      transition: 'all 0.2s',
                     }}>
                       <i className="fas fa-times" style={{ marginRight: '6px' }}></i>
                       Reject
                     </button>
                     <button style={{
-                      padding: '10px 24px',
+                      padding: '10px 28px',
+                      background: '#fff',
+                      color: colors.warning,
+                      border: `1.5px solid ${colors.warning}`,
+                      borderRadius: '10px',
+                      fontWeight: 600,
+                      fontSize: '13px',
+                      cursor: 'pointer',
+                      fontFamily: "'Poppins', sans-serif",
+                      transition: 'all 0.2s',
+                    }}>
+                      <i className="fas fa-clock" style={{ marginRight: '6px' }}></i>
+                      Waiting list
+                    </button>
+                    <button style={{
+                      padding: '10px 28px',
                       background: colors.primary,
                       color: '#fff',
                       border: 'none',
@@ -736,23 +819,10 @@ export default function CandidateDetailView({ candidate, onBack }) {
                       fontSize: '13px',
                       cursor: 'pointer',
                       fontFamily: "'Poppins', sans-serif",
+                      transition: 'all 0.2s',
                     }}>
-                      <i className="fas fa-user-tie" style={{ marginRight: '6px' }}></i>
-                      Choose team lead
-                    </button>
-                    <button style={{
-                      padding: '10px 24px',
-                      background: colors.success,
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '10px',
-                      fontWeight: 600,
-                      fontSize: '13px',
-                      cursor: 'pointer',
-                      fontFamily: "'Poppins', sans-serif",
-                    }}>
-                      <i className="fas fa-paper-plane" style={{ marginRight: '6px' }}></i>
-                      Send to team lead
+                      <i className="fas fa-calendar-plus" style={{ marginRight: '6px' }}></i>
+                      Schedule interview
                     </button>
                   </div>
                 </div>

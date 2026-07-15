@@ -4,18 +4,31 @@ import HRLayout from '@/components/HRLayout';
 import HRPageLayout from '@/components/HRPageLayout';
 import CandidateDetailView from '@/components/candidate/CandidateDetailView';
 
-// Fixed demo data
+// ─── UPDATED DEMO DATA with the required statuses ──────────────
 const DEMO_CANDIDATES = [
-  { id: 1, fullName: 'Sana Kareem', position: 'UI/UX Designer', skills: ['Figma', 'Prototyping'], applied: '2026-06-19', status: 'Interviewing' },
-  { id: 2, fullName: 'Hamza Khan', position: 'Backend Dev', skills: ['Node.js', 'PostgreSQL'], applied: '2026-06-09', status: 'Shortlisted' },
-  { id: 3, fullName: 'Talha Baig', position: 'QA Engineer', skills: ['Manual QA', 'Automation'], applied: '2026-06-25', status: 'Rejected' },
-  { id: 4, fullName: 'Rabia Ali', position: 'Frontend Dev Intern', skills: ['React', 'Tailwind'], applied: '2026-06-18', status: 'Applied' },
+  { id: 1, fullName: 'Sana Kareem', position: 'UI/UX Designer', skills: ['Figma', 'Prototyping'], applied: '2026-06-19', status: 'Selected' },
+  { id: 2, fullName: 'Hamza Khan', position: 'Backend Dev', skills: ['Node.js', 'PostgreSQL'], applied: '2026-06-09', status: 'Rejected' },
+  { id: 3, fullName: 'Talha Baig', position: 'QA Engineer', skills: ['Manual QA', 'Automation'], applied: '2026-06-25', status: 'Applied' },
+  { id: 4, fullName: 'Rabia Ali', position: 'Frontend Dev Intern', skills: ['React', 'Tailwind'], applied: '2026-06-18', status: 'Waiting list' },
 ];
 
 export default function Candidates() {
   const [candidates] = useState(DEMO_CANDIDATES);
   const [selected, setSelected] = useState([]);
   const [selectedCandidate, setSelectedCandidate] = useState(null);
+
+  // Filter states
+  const [openFilter, setOpenFilter] = useState(null);
+  const [statusFilter, setStatusFilter] = useState(null);
+  const [positionFilter, setPositionFilter] = useState(null);
+  const [skillsFilter, setSkillsFilter] = useState(null);
+
+  // ─── statusOptions is now derived from the updated data ───────
+  const statusOptions = [...new Set(DEMO_CANDIDATES.map(c => c.status || 'Applied'))];
+  // This will give: ['Selected', 'Rejected', 'Applied', 'Waiting list']
+
+  const positionOptions = [...new Set(DEMO_CANDIDATES.map((c) => c.position))];
+  const skillsOptions = [...new Set(DEMO_CANDIDATES.flatMap((c) => c.skills))];
 
   const colors = {
     primary: '#007A7C',
@@ -27,14 +40,16 @@ export default function Candidates() {
     skillText: '#007A7C',
   };
 
+  // ─── statusStyles map now includes 'Waiting list' ─────────────
   const statusStyles = (status) => {
     const map = {
+      Selected:     { bg: '#DFF6E5', color: '#1E8E3E' },
+      Rejected:     { bg: '#FDE2E4', color: '#D32F2F' },
+      Applied:      { bg: '#E3F2FD', color: '#1565C0' },
+      'Waiting list': { bg: '#FFF3D6', color: '#B8860B' },
       Interviewing: { bg: '#EDE7FB', color: '#6B3FD4' },
       Shortlisted:  { bg: '#FFF3D6', color: '#B8860B' },
-      Selected:     { bg: '#DFF6E5', color: '#1E8E3E' },
-      Applied:      { bg: '#E3F2FD', color: '#1565C0' },
       Submitted:    { bg: '#E3F2FD', color: '#1565C0' },
-      Rejected:     { bg: '#FDE2E4', color: '#D32F2F' },
     };
     return map[status] || { bg: '#EEEEEE', color: '#555555' };
   };
@@ -50,10 +65,10 @@ export default function Candidates() {
   };
 
   const toggleSelectAll = () => {
-    if (selected.length === candidates.length) {
+    if (selected.length === filteredCandidates.length) {
       setSelected([]);
     } else {
-      setSelected(candidates.map((c, idx) => c.id || idx));
+      setSelected(filteredCandidates.map((c, idx) => c.id || idx));
     }
   };
 
@@ -77,26 +92,97 @@ export default function Candidates() {
     );
   }
 
+  // Apply filters to candidate list
+  const filteredCandidates = candidates.filter((c) => {
+    const status = c.status || 'Applied';
+    const matchesStatus = !statusFilter || status === statusFilter;
+    const matchesPosition = !positionFilter || c.position === positionFilter;
+    const matchesSkills = !skillsFilter || getSkills(c).includes(skillsFilter);
+    return matchesStatus && matchesPosition && matchesSkills;
+  });
+
+  // Reusable filter dropdown button
+  const FilterDropdown = ({ label, filterKey, options, value, onChange }) => (
+    <div style={{ position: 'relative' }}>
+      <button
+        onClick={() => setOpenFilter(openFilter === filterKey ? null : filterKey)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: '10px', width: '100%',
+          background: 'white', border: `1px solid ${colors.border}`, borderRadius: '10px',
+          padding: '8px 10px 8px 16px', fontFamily: "'Poppins', sans-serif", fontSize: '13px',
+          color: colors.textDark, cursor: 'pointer', justifyContent: 'space-between'
+        }}
+      >
+        {value ? `${label}: ${value}` : label}
+        <span style={{
+          width: '20px', height: '20px', borderRadius: '50%', background: colors.primary,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+        }}>
+          <i className="fas fa-chevron-down" style={{ fontSize: '9px', color: 'white' }}></i>
+        </span>
+      </button>
+      {openFilter === filterKey && (
+        <div style={{
+          position: 'absolute', top: 'calc(100% + 6px)', left: 0, right: 0, zIndex: 10,
+          background: 'white', border: `1px solid ${colors.border}`, borderRadius: '10px',
+          boxShadow: '0 6px 16px rgba(0,0,0,0.08)', overflow: 'hidden'
+        }}>
+          {value && (
+            <div
+              onClick={() => { onChange(null); setOpenFilter(null); }}
+              style={{ padding: '9px 16px', fontSize: '13px', color: colors.textGray, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}
+            >
+              Clear filter
+            </div>
+          )}
+          {options.map((opt) => (
+            <div
+              key={opt}
+              onClick={() => { onChange(opt); setOpenFilter(null); }}
+              style={{
+                padding: '9px 16px', fontSize: '13px', cursor: 'pointer',
+                fontFamily: "'Poppins', sans-serif",
+                background: value === opt ? colors.primary : 'white',
+                color: value === opt ? 'white' : colors.textDark,
+              }}
+              onMouseEnter={(e) => { if (value !== opt) e.currentTarget.style.background = '#F2F4F5'; }}
+              onMouseLeave={(e) => { if (value !== opt) e.currentTarget.style.background = 'white'; }}
+            >
+              {opt}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
   // ─── Otherwise show the table ──────────────────────────────────
   return (
     <HRLayout>
       <HRPageLayout title="Candidates">
-        {/* Filter by skills */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
-          <button style={{
-            display: 'flex', alignItems: 'center', gap: '10px',
-            background: 'white', border: `1px solid ${colors.border}`, borderRadius: '10px',
-            padding: '8px 10px 8px 16px', fontFamily: "'Poppins', sans-serif", fontSize: '13px',
-            color: colors.textDark, cursor: 'pointer'
-          }}>
-            Filter by skills
-            <span style={{
-              width: '20px', height: '20px', borderRadius: '50%', background: colors.primary,
-              display: 'flex', alignItems: 'center', justifyContent: 'center'
-            }}>
-              <i className="fas fa-chevron-down" style={{ fontSize: '9px', color: 'white' }}></i>
-            </span>
-          </button>
+        {/* Filters: Status / Position / Skills */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px', marginBottom: '16px' }}>
+          <FilterDropdown
+            label="Filter by status"
+            filterKey="status"
+            options={statusOptions}
+            value={statusFilter}
+            onChange={setStatusFilter}
+          />
+          <FilterDropdown
+            label="Filter by position"
+            filterKey="position"
+            options={positionOptions}
+            value={positionFilter}
+            onChange={setPositionFilter}
+          />
+          <FilterDropdown
+            label="Filter by skills"
+            filterKey="skills"
+            options={skillsOptions}
+            value={skillsFilter}
+            onChange={setSkillsFilter}
+          />
         </div>
 
         {/* Table card */}
@@ -118,7 +204,7 @@ export default function Candidates() {
                   <th style={{ padding: '10px 8px', width: '32px' }}>
                     <input
                       type="checkbox"
-                      checked={candidates.length > 0 && selected.length === candidates.length}
+                      checked={filteredCandidates.length > 0 && selected.length === filteredCandidates.length}
                       onChange={toggleSelectAll}
                     />
                   </th>
@@ -131,7 +217,7 @@ export default function Candidates() {
                 </tr>
               </thead>
               <tbody>
-                {candidates.map((c, idx) => {
+                {filteredCandidates.map((c, idx) => {
                   const id = c.id || idx;
                   const status = c.status || 'Applied';
                   const style = statusStyles(status);

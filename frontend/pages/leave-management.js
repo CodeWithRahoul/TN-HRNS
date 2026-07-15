@@ -51,12 +51,20 @@ export default function LeaveManagement() {
     },
   ]);
 
+  // ─── Filter by type state ────────────────────────────────────
+  const [openFilter, setOpenFilter] = useState(false);
+  const [typeFilter, setTypeFilter] = useState(null);
+  const typeOptions = ['Emergency leave', 'Short leave', 'Annual leave', 'Casual leave', 'Sick leave'];
+
   // ─── Filtered Data ──────────────────────────────────────────
-  const filteredLeaves = leaves.filter((leave) =>
-    leave.employee.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    leave.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    leave.status.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredLeaves = leaves.filter((leave) => {
+    const matchesSearch =
+      leave.employee.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      leave.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      leave.status.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesType = !typeFilter || leave.type === typeFilter;
+    return matchesSearch && matchesType;
+  });
 
   const selectedLeave = leaves.find((l) => l.id === selectedLeaveId) || null;
 
@@ -102,48 +110,57 @@ export default function LeaveManagement() {
   return (
     <HRLayout>
       <HRPageLayout title="Leave management">
-        {/* ─── Search Bar ────────────────────────────────────── */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          background: colors.cardBg,
-          border: `1px solid ${colors.border}`,
-          borderRadius: '8px',
-          padding: '4px 4px 4px 16px',
-          marginBottom: '24px',
-          maxWidth: '500px',
-        }}>
-          <i className="fas fa-search" style={{ color: colors.textGray, fontSize: '14px', marginRight: '8px' }}></i>
-          <input
-            type="text"
-            placeholder="Search projects, tasks, or clients."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{
-              border: 'none',
-              outline: 'none',
-              padding: '10px 12px',
-              flex: 1,
-              fontFamily: "'Poppins', sans-serif",
-              fontSize: '14px',
-              color: colors.textDark,
-              background: 'transparent',
-            }}
-          />
+        {/* ─── Filter by type ─────────────────────────────────── */}
+        <div style={{ position: 'relative', maxWidth: '220px', marginBottom: '20px' }}>
           <button
+            onClick={() => setOpenFilter((prev) => !prev)}
             style={{
-              backgroundColor: colors.primary,
-              color: 'white',
-              border: 'none',
-              padding: '8px 20px',
-              borderRadius: '6px',
-              fontWeight: 500,
-              cursor: 'pointer',
-              fontFamily: "'Poppins', sans-serif",
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '10px', width: '100%',
+              background: 'white', border: `1px solid ${colors.border}`, borderRadius: '10px',
+              padding: '8px 10px 8px 16px', fontFamily: "'Poppins', sans-serif", fontSize: '13px',
+              color: colors.textDark, cursor: 'pointer',
             }}
           >
-            Search
+            {typeFilter ? `Filter by type: ${typeFilter}` : 'Filter by type'}
+            <span style={{
+              width: '20px', height: '20px', borderRadius: '50%', background: colors.primary,
+              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+            }}>
+              <i className="fas fa-chevron-down" style={{ fontSize: '9px', color: 'white' }}></i>
+            </span>
           </button>
+          {openFilter && (
+            <div style={{
+              position: 'absolute', top: 'calc(100% + 6px)', left: 0, right: 0, zIndex: 10,
+              background: 'white', border: `1px solid ${colors.border}`, borderRadius: '10px',
+              boxShadow: '0 6px 16px rgba(0,0,0,0.08)', overflow: 'hidden',
+            }}>
+              {typeFilter && (
+                <div
+                  onClick={() => { setTypeFilter(null); setOpenFilter(false); }}
+                  style={{ padding: '9px 16px', fontSize: '13px', color: colors.textGray, cursor: 'pointer', fontFamily: "'Poppins', sans-serif" }}
+                >
+                  Clear filter
+                </div>
+              )}
+              {typeOptions.map((opt) => (
+                <div
+                  key={opt}
+                  onClick={() => { setTypeFilter(opt); setOpenFilter(false); }}
+                  style={{
+                    padding: '9px 16px', fontSize: '13px', cursor: 'pointer',
+                    fontFamily: "'Poppins', sans-serif",
+                    background: typeFilter === opt ? colors.primary : 'white',
+                    color: typeFilter === opt ? 'white' : colors.textDark,
+                  }}
+                  onMouseEnter={(e) => { if (typeFilter !== opt) e.currentTarget.style.background = '#F2F4F5'; }}
+                  onMouseLeave={(e) => { if (typeFilter !== opt) e.currentTarget.style.background = 'white'; }}
+                >
+                  {opt}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* ─── Main Content: Table + Side Panel ─────────────── */}
