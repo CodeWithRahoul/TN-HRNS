@@ -2,7 +2,6 @@
 import { useState, useEffect, useRef } from 'react';
 import HRLayout from '@/components/HRLayout';
 import HRPageLayout from '@/components/HRPageLayout';
-import { taskAPI } from '@/services/api';
 
 // Converts a raw task row from the backend into the shape this page's table expects
 function mapTaskFromBackend(t) {
@@ -279,7 +278,7 @@ export default function InternalCommunication() {
         <div
           style={{
             background: colors.cardBg,
-            border: `1px solid ${colors.borderDark}`,
+            border: `1px solid ${colors.border}`,
             borderRadius: '16px',
             boxShadow: '0 2px 10px rgba(2,10,20,0.05)',
             overflow: 'hidden',

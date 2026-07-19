@@ -1,6 +1,7 @@
 // components/candidate/CandidateDetailView.js
 import { useState, useEffect } from 'react';
 import { taskAPI, applicationAPI, messageAPI } from '@/services/api';
+import ScheduleInterviewModal from '@/components/common/ScheduleInterviewModal';
 
 export default function CandidateDetailView({ candidate, onBack }) {
   const [activeTab, setActiveTab] = useState('application');
@@ -26,6 +27,10 @@ export default function CandidateDetailView({ candidate, onBack }) {
   const [assigning, setAssigning] = useState(false);
   const [assignError, setAssignError] = useState('');
   const [assignSuccess, setAssignSuccess] = useState('');
+
+  // ── Modal states ─────────────────────────────────────────────
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [showProjectModal, setShowProjectModal] = useState(false);
 
   // ── Fetch the candidate's real task submission ──────────────
   const candidateIdForSubmission = candidate?.candidate_id || candidate?.id;
@@ -142,7 +147,6 @@ export default function CandidateDetailView({ candidate, onBack }) {
     setAssigning(true);
     try {
       const formData = new FormData();
-      // NOTE: backend field names confirmed from Postman: description, priority, project_id, attachment
       formData.append('title', taskName);
       formData.append('description', taskDescription);
       formData.append('priority', 'Medium');
@@ -194,10 +198,6 @@ export default function CandidateDetailView({ candidate, onBack }) {
   };
 
   // ── Team lead selection + notification ──────────────────────
-  // NOTE: there's no "team lead for a candidate" concept in the backend
-  // schema yet (only project-level team lead assignment exists). Until
-  // that's built, this collects a team lead's user ID and notifies them
-  // via the existing messages endpoint, referencing the real submission.
   const handleChooseTeamLead = () => {
     setShowTeamLeadInput(true);
     setActionMessage('');
@@ -231,6 +231,23 @@ export default function CandidateDetailView({ candidate, onBack }) {
       setSendingToLead(false);
     }
   };
+
+  // ─── Schedule Interview handler ─────────────────────────────
+  const handleSchedule = (data) => {
+    // Here you would call your API to schedule the interview.
+    // For now, just close the modal and show a message.
+    alert(`Interview scheduled for ${info.name} on ${data.date} at ${data.time}`);
+    setShowScheduleModal(false);
+  };
+
+  // ─── Build a candidates list for the modal ──────────────────
+  const candidatesList = [
+    {
+      candidate_id: candidate?.id || 1,
+      fullName: info.name,
+      position: info.role,
+    }
+  ];
 
   return (
     <div style={{
@@ -366,23 +383,26 @@ export default function CandidateDetailView({ candidate, onBack }) {
             ))}
           </div>
 
-          {/* Create Project Button */}
-          <button style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            background: 'rgba(255,255,255,0.15)',
-            border: '1px solid rgba(255,255,255,0.25)',
-            color: '#fff',
-            borderRadius: '10px',
-            padding: '12px 14px',
-            cursor: 'pointer',
-            fontSize: '13px',
-            fontFamily: "'Poppins', sans-serif",
-            fontWeight: 600,
-            width: '100%',
-          }}>
+          {/* Create Project Button (opens modal) */}
+          <button
+            onClick={() => setShowProjectModal(true)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              background: 'rgba(255,255,255,0.15)',
+              border: '1px solid rgba(255,255,255,0.25)',
+              color: '#fff',
+              borderRadius: '10px',
+              padding: '12px 14px',
+              cursor: 'pointer',
+              fontSize: '13px',
+              fontFamily: "'Poppins', sans-serif",
+              fontWeight: 600,
+              width: '100%',
+            }}
+          >
             <i className="fas fa-plus-circle"></i> Create Project
           </button>
         </aside>
@@ -461,7 +481,7 @@ export default function CandidateDetailView({ candidate, onBack }) {
               padding: '28px 32px',
               boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
             }}>
-              {/* Header: Avatar + Name + Role */}
+              {/* Header: Avatar + Name + Role (only one) */}
               <div style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -663,43 +683,9 @@ export default function CandidateDetailView({ candidate, onBack }) {
                 </div>
               )}
 
-              {/* 2. ASSIGN TASK */}
+              {/* 2. ASSIGN TASK - DUPLICATE AVATAR REMOVED */}
               {activeTab === 'assign' && (
                 <div>
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '16px',
-                    marginBottom: '20px',
-                    padding: '16px',
-                    background: '#f8f9fa',
-                    borderRadius: '12px',
-                  }}>
-                    <div style={{
-                      width: '48px',
-                      height: '48px',
-                      borderRadius: '50%',
-                      background: colors.lightTeal,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '18px',
-                      fontWeight: 700,
-                      color: colors.primary,
-                      flexShrink: 0,
-                    }}>
-                      {initials}
-                    </div>
-                    <div>
-                      <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 600, color: colors.textDark }}>
-                        {info.name}
-                      </h4>
-                      <p style={{ margin: '2px 0 0 0', fontSize: '13px', color: colors.textGray }}>
-                        {info.role}
-                      </p>
-                    </div>
-                  </div>
-
                   <div style={{ display: 'grid', gap: '16px' }}>
                     <div>
                       <label style={{ fontSize: '13px', fontWeight: 600, color: colors.textDark, display: 'block', marginBottom: '4px' }}>
@@ -844,18 +830,21 @@ export default function CandidateDetailView({ candidate, onBack }) {
                   </div>
 
                   <div style={{ marginTop: '20px', display: 'flex', gap: '12px' }}>
-                    <button style={{
-                      flex: 1,
-                      background: 'transparent',
-                      border: `1.5px solid ${colors.border}`,
-                      padding: '12px',
-                      borderRadius: '10px',
-                      fontWeight: 600,
-                      fontSize: '14px',
-                      cursor: 'pointer',
-                      color: colors.textDark,
-                      fontFamily: "'Poppins', sans-serif",
-                    }}>
+                    <button
+                      style={{
+                        flex: 1,
+                        background: 'transparent',
+                        border: `1.5px solid ${colors.border}`,
+                        padding: '12px',
+                        borderRadius: '10px',
+                        fontWeight: 600,
+                        fontSize: '14px',
+                        cursor: 'pointer',
+                        color: colors.textDark,
+                        fontFamily: "'Poppins', sans-serif",
+                      }}
+                      onClick={() => setShowProjectModal(true)}
+                    >
                       <i className="fas fa-plus-circle" style={{ marginRight: '6px' }}></i>
                       Create Project
                     </button>
@@ -1032,6 +1021,25 @@ export default function CandidateDetailView({ candidate, onBack }) {
                       <i className="fas fa-paper-plane" style={{ marginRight: '6px' }}></i>
                       {sendingToLead ? 'Sending...' : 'Send to team lead'}
                     </button>
+                    {/* ─── Schedule Interview button opens modal ─── */}
+                    <button
+                      style={{
+                        padding: '10px 28px',
+                        background: colors.primary,
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '10px',
+                        fontWeight: 600,
+                        fontSize: '13px',
+                        cursor: 'pointer',
+                        fontFamily: "'Poppins', sans-serif",
+                        transition: 'all 0.2s',
+                      }}
+                      onClick={() => setShowScheduleModal(true)}
+                    >
+                      <i className="fas fa-calendar-plus" style={{ marginRight: '6px' }}></i>
+                      Schedule interview
+                    </button>
                   </div>
                 </div>
               )}
@@ -1039,6 +1047,175 @@ export default function CandidateDetailView({ candidate, onBack }) {
           </div>
         </main>
       </div>
+
+      {/* ─── CREATE PROJECT MODAL ─── */}
+      {showProjectModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 99999,
+          padding: '20px',
+        }}
+        onClick={() => setShowProjectModal(false)}
+        >
+          <div style={{
+            background: '#ffffff',
+            borderRadius: '16px',
+            maxWidth: '540px',
+            width: '100%',
+            padding: '32px 32px 28px',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
+            position: 'relative',
+          }}
+          onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowProjectModal(false)}
+              style={{
+                position: 'absolute',
+                top: '12px',
+                right: '16px',
+                background: 'transparent',
+                border: 'none',
+                fontSize: '28px',
+                cursor: 'pointer',
+                color: colors.textGray,
+                fontFamily: "'Poppins', sans-serif",
+                lineHeight: 1,
+              }}
+            >
+              ×
+            </button>
+
+            <h2 style={{ fontSize: '22px', fontWeight: 700, color: colors.textDark, margin: '0 0 24px 0' }}>
+              Create Project
+            </h2>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div>
+                <label style={{ fontSize: '14px', fontWeight: 600, color: colors.textDark, display: 'block', marginBottom: '6px' }}>
+                  Project name
+                </label>
+                <input
+                  type="text"
+                  placeholder="Enter project name"
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    borderRadius: '8px',
+                    border: `1.5px solid ${colors.border}`,
+                    fontSize: '14px',
+                    fontFamily: "'Poppins', sans-serif",
+                    background: '#fafcfc',
+                    outline: 'none',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '14px', fontWeight: 600, color: colors.textDark, display: 'block', marginBottom: '6px' }}>
+                  Description
+                </label>
+                <textarea
+                  placeholder="Enter project description"
+                  rows="3"
+                  style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    borderRadius: '8px',
+                    border: `1.5px solid ${colors.border}`,
+                    fontSize: '14px',
+                    fontFamily: "'Poppins', sans-serif",
+                    background: '#fafcfc',
+                    outline: 'none',
+                    resize: 'vertical',
+                    boxSizing: 'border-box',
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '14px', fontWeight: 600, color: colors.textDark, display: 'block', marginBottom: '6px' }}>
+                  Form team
+                </label>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  padding: '10px 14px',
+                  border: `1.5px solid ${colors.border}`,
+                  borderRadius: '8px',
+                  background: '#fafcfc',
+                  cursor: 'pointer',
+                }}>
+                  <span style={{ color: colors.textGray, fontSize: '14px' }}>Add member</span>
+                  <i className="fas fa-plus-circle" style={{ color: colors.primary, fontSize: '18px' }}></i>
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '14px', fontWeight: 600, color: colors.textDark, display: 'block', marginBottom: '6px' }}>
+                  Target timeline
+                </label>
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '12px',
+                  padding: '10px 14px',
+                  border: `1.5px solid ${colors.border}`,
+                  borderRadius: '8px',
+                  background: '#fafcfc',
+                  cursor: 'pointer',
+                }}>
+                  <span style={{ color: colors.textGray, fontSize: '14px' }}>Assign project manager</span>
+                  <i className="fas fa-chevron-down" style={{ color: colors.textGray, fontSize: '14px' }}></i>
+                </div>
+              </div>
+
+              <button
+                style={{
+                  background: colors.primary,
+                  color: '#fff',
+                  border: 'none',
+                  padding: '14px',
+                  borderRadius: '10px',
+                  fontSize: '16px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                  fontFamily: "'Poppins', sans-serif",
+                  width: '100%',
+                  marginTop: '8px',
+                  transition: 'background 0.2s',
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = colors.primaryDark}
+                onMouseLeave={(e) => e.currentTarget.style.background = colors.primary}
+                onClick={() => {
+                  alert('Project created successfully!');
+                  setShowProjectModal(false);
+                }}
+              >
+                Create project
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── SCHEDULE INTERVIEW MODAL ─── */}
+      <ScheduleInterviewModal
+        isOpen={showScheduleModal}
+        onClose={() => setShowScheduleModal(false)}
+        onSchedule={handleSchedule}
+        candidates={candidatesList}
+      />
     </div>
   );
 }
