@@ -1,6 +1,6 @@
-// components/HRLayout.js
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
+
 export default function HRLayout({ children }) {
   const router = useRouter();
 
@@ -24,16 +24,21 @@ export default function HRLayout({ children }) {
       }
     }
   }, []);
+
   const initials = user.name
     ? user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
     : 'HR';
+
+  // ✅ Updated navItems – Letters aur Attendance add kar diye
   const navItems = [
     { name: 'Dashboard', path: '/hr-dashboard', icon: 'fa-chart-pie' },
     { name: 'Calendar', path: '/calendar', icon: 'fa-calendar-alt' },
     { name: 'Candidates', path: '/candidates', icon: 'fa-users' },
     { name: 'Leave management', path: '/leave-management', icon: 'fa-clock' },
-    { name: 'Projects', path: '/projects', icon: 'fa-project-diagram' },  // ✅ ADDED
+    { name: 'Projects', path: '/projects', icon: 'fa-project-diagram' },
     { name: 'Internal communication', path: '/internal-communication', icon: 'fa-comments' },
+    { name: 'Letters', path: '/letters', icon: 'fa-envelope' },           // ✅ NEW
+    { name: 'Attendance', path: '/attendance', icon: 'fa-clipboard-list' }, // ✅ NEW
   ];
 
   const handleLogout = () => {
