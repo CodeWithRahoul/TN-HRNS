@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 
-export default function HRPageLayout({ title, children }) {
+export default function PMPageLayout({ title, children }) {
   const router = useRouter();
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadIds, setUnreadIds] = useState([1, 2, 3]);

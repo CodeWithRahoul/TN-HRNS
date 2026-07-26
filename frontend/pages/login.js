@@ -30,9 +30,26 @@ export default function Login() {
       return;
     }
     setApiError('');
+
+    // ✅ Hardcoded PM credentials for testing
+    if (email === 'pm@trustnexus.com' && password === '123456') {
+      // Manually set PM role and redirect
+      localStorage.setItem('userRole', 'PM');
+      localStorage.setItem('userData', JSON.stringify({ name: 'PM User', email: 'pm@example.com' }));
+      router.push('/pm-dashboard');
+      return;
+    }
+
+    // Normal login flow for other users
     const result = await login(email, password, role);
     if (result.success) {
-      router.push(role === 'HR' ? '/hr-dashboard' : '/dashboard');
+      if (role === 'HR') {
+        router.push('/hr-dashboard');
+      } else if (role === 'PM') {
+        router.push('/pm-dashboard');
+      } else {
+        router.push('/dashboard');
+      }
     } else {
       setApiError(result.error || 'Invalid email or password. Please try again.');
     }
@@ -59,8 +76,14 @@ export default function Login() {
           <div style={{ marginBottom: '16px' }}>
             <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '4px' }}>Login as</label>
             <div style={{ display: 'flex', gap: '12px' }}>
-              {['Employee', 'HR'].map(r => (
-                <button key={r} type="button" className={`role-btn ${role === r ? 'active' : ''}`} style={{ flex: 1 }} onClick={() => setRole(r)}>
+              {['Employee', 'HR', 'PM'].map(r => (
+                <button 
+                  key={r} 
+                  type="button" 
+                  className={`role-btn ${role === r ? 'active' : ''}`} 
+                  style={{ flex: 1 }} 
+                  onClick={() => setRole(r)}
+                >
                   {r}
                 </button>
               ))}
@@ -70,8 +93,22 @@ export default function Login() {
           <button className="auth-google"><i className="fab fa-google"></i> Continue with Google</button>
           <div className="auth-or">OR EMAIL</div>
 
-          <Input label="Email Address" type="email" placeholder="name@email.com" value={email} onChange={(e) => setEmail(e.target.value)} error={errors.email} />
-          <Input label="Password" type="password" placeholder="••••••" value={password} onChange={(e) => setPassword(e.target.value)} error={errors.password} />
+          <Input 
+            label="Email Address" 
+            type="email" 
+            placeholder="name@email.com" 
+            value={email} 
+            onChange={(e) => setEmail(e.target.value)} 
+            error={errors.email} 
+          />
+          <Input 
+            label="Password" 
+            type="password" 
+            placeholder="••••••" 
+            value={password} 
+            onChange={(e) => setPassword(e.target.value)} 
+            error={errors.password} 
+          />
 
           <div className="auth-forgot-password"><a>Forget Password?</a></div>
 
@@ -90,7 +127,9 @@ export default function Login() {
             </div>
           )}
 
-          <Button variant="primary" loading={loading} onClick={handleSubmit} style={{ width: '100%' }}>Sign In to Account</Button>
+          <Button variant="primary" loading={loading} onClick={handleSubmit} style={{ width: '100%' }}>
+            Sign In to Account
+          </Button>
 
           <div className="auth-switch">
             Don't have an account? <a onClick={() => router.push('/register')}>Sign Up</a>

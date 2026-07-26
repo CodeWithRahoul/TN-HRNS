@@ -4,15 +4,33 @@ import HRPageLayout from '@/components/HRPageLayout';
 
 export default function Attendance() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [isCheckedIn, setIsCheckedIn] = useState(false);
+  // 'idle' | 'verifying' | 'checked-in'
+  const [checkInStatus, setCheckInStatus] = useState('idle');
+  const [checkInTime, setCheckInTime] = useState('');
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
+  const [isGeoFenceModalOpen, setIsGeoFenceModalOpen] = useState(false);
+
+  // Geo-fence form fields
+  const [officeLocation, setOfficeLocation] = useState('');
+  const [radius, setRadius] = useState('');
+  const [latitude, setLatitude] = useState('');
+  const [longitude, setLongitude] = useState('');
+  const [appliesTo, setAppliesTo] = useState('');
+
+  // Filter dropdown state
+  const [openFilter, setOpenFilter] = useState(null); // 'position' | 'project' | 'employee' | null
+  const [positionFilter, setPositionFilter] = useState('');
+  const [projectFilter, setProjectFilter] = useState('');
+  const [employeeFilter, setEmployeeFilter] = useState('');
 
   const colors = {
     primary: '#00A19A',
     primaryLight: '#E6F5F4',
     primaryDark: '#008a84',
+    verifying: '#F4A11A',
+    checkedIn: '#1F9254',
     border: '#e2e8e8',
     containerBorder: '#000000',
     textDark: '#1A1A1A',
@@ -20,7 +38,8 @@ export default function Attendance() {
     textMuted: '#8a8f98',
     bg: '#F4FBFB',
     cardBg: '#FFFFFF',
-    tableHeaderBg: '#2C3E50',
+    tableHeaderBg: '#EEF3F3',
+    tableHeaderText: '#4A5560',
     mapBg: '#CDEAE7',
   };
 
@@ -31,13 +50,39 @@ export default function Attendance() {
   };
 
   const attendanceRecords = [
-    { initials: 'SK', name: 'Sara kareem', role: 'UI/UX designer', checkIn: '9:00 AM', checkOut: '5:00 PM' },
-    { initials: 'TR', name: 'Tehreem raja', role: 'Frontend developer', checkIn: '8:55 AM', checkOut: '5:05 PM' },
-    { initials: 'BA', name: 'Bilal ahmed', role: 'Project manager', checkIn: '8:50 AM', checkOut: '5:16 PM' },
+    { initials: 'SK', name: 'Sara kareem', role: 'UI/UX designer', project: 'Nexovate', checkIn: '5:00 PM', checkOut: '5:00 PM' },
+    { initials: 'TR', name: 'Tehreem raja', role: 'Frontend dev', project: 'Nexovate', checkIn: '5:05 PM', checkOut: '5:05 PM' },
+    { initials: 'BA', name: 'Bilal ahmed', role: 'Project manager', project: 'TN-HRMS', checkIn: '5:16 PM', checkOut: '5:16 PM' },
   ];
 
+  const positionOptions = ['QA engineer', 'Project manager', 'Frontend dev', 'Backend dev', 'UI/UX designer'];
+  const projectOptions = ['Nexovate', 'TN-HRMS', 'Nexus desktop'];
+  const employeeOptions = ['Sara kareem', 'Tehreem raja', 'Saleem ahmed', 'Abdul rehman', 'Bilal ahmed'];
+
+  const filteredRecords = attendanceRecords.filter((record) => {
+    const matchesPosition = !positionFilter || record.role === positionFilter;
+    const matchesProject = !projectFilter || record.project === projectFilter;
+    const matchesEmployee = !employeeFilter || record.name === employeeFilter;
+    const matchesSearch = !searchQuery || record.name.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesPosition && matchesProject && matchesEmployee && matchesSearch;
+  });
+
+  const formatNow = () => {
+    const now = new Date();
+    let hours = now.getHours();
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const ampm = hours >= 12 ? 'pm' : 'am';
+    hours = hours % 12 || 12;
+    return `${hours}:${minutes} ${ampm}`;
+  };
+
   const handleCheckIn = () => {
-    setIsCheckedIn(!isCheckedIn);
+    if (checkInStatus === 'checked-in') return;
+    setCheckInStatus('verifying');
+    setTimeout(() => {
+      setCheckInTime(formatNow());
+      setCheckInStatus('checked-in');
+    }, 1800);
   };
 
   const handleGenerateReport = () => {
@@ -69,59 +114,108 @@ export default function Attendance() {
     setEndDate(dateStr);
   };
 
+  const toggleFilter = (name) => {
+    setOpenFilter(openFilter === name ? null : name);
+  };
+
+  const renderFilterDropdown = (label, name, options, value, setValue) => (
+    <div style={{ position: 'relative', flex: 1 }}>
+      <button
+        onClick={() => toggleFilter(name)}
+        style={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          background: colors.cardBg,
+          border: `1px solid ${colors.containerBorder}`,
+          borderRadius: '8px',
+          padding: '10px 14px',
+          fontSize: '13px',
+          fontWeight: 500,
+          color: colors.textDark,
+          fontFamily: "'Poppins', sans-serif",
+          cursor: 'pointer',
+        }}
+      >
+        <span>{value || label}</span>
+        <i
+          className="fas fa-chevron-down"
+          style={{
+            fontSize: '11px',
+            color: colors.primary,
+            transform: openFilter === name ? 'rotate(180deg)' : 'rotate(0deg)',
+            transition: 'transform 0.15s',
+          }}
+        />
+      </button>
+
+      {openFilter === name && (
+        <div style={{
+          position: 'absolute',
+          top: 'calc(100% + 6px)',
+          left: 0,
+          right: 0,
+          background: colors.cardBg,
+          border: `1px solid ${colors.border}`,
+          borderRadius: '10px',
+          boxShadow: '0 8px 24px rgba(0,0,0,0.12)',
+          zIndex: 20,
+          overflow: 'hidden',
+        }}>
+          <div
+            onClick={() => { setValue(''); setOpenFilter(null); }}
+            style={{
+              padding: '10px 14px',
+              fontSize: '13px',
+              color: colors.textGray,
+              cursor: 'pointer',
+              fontFamily: "'Poppins', sans-serif",
+              background: !value ? colors.primaryLight : colors.cardBg,
+            }}
+          >
+            All
+          </div>
+          {options.map((opt) => (
+            <div
+              key={opt}
+              onClick={() => { setValue(opt); setOpenFilter(null); }}
+              style={{
+                padding: '10px 14px',
+                fontSize: '13px',
+                color: opt === value ? '#fff' : colors.textDark,
+                cursor: 'pointer',
+                fontFamily: "'Poppins', sans-serif",
+                background: opt === value ? colors.primary : colors.cardBg,
+              }}
+              onMouseEnter={(e) => { if (opt !== value) e.currentTarget.style.background = colors.primaryLight; }}
+              onMouseLeave={(e) => { if (opt !== value) e.currentTarget.style.background = colors.cardBg; }}
+            >
+              {opt}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+  // Attendance circle content based on status
+  const circleConfig = {
+    idle: { bg: colors.primary, shadow: 'rgba(0,161,154,0.35)', label: 'Check in' },
+    verifying: { bg: colors.verifying, shadow: 'rgba(244,161,26,0.35)', label: 'Verifying...' },
+    'checked-in': { bg: colors.checkedIn, shadow: 'rgba(31,146,84,0.35)', label: 'Checked in' },
+  };
+  const currentCircle = circleConfig[checkInStatus];
+
+  const handleSaveGeoFence = () => {
+    alert(`Geo-fence configuration saved!\nOffice: ${officeLocation || 'N/A'}\nRadius: ${radius || 'N/A'}\nLatitude: ${latitude || 'N/A'}\nLongitude: ${longitude || 'N/A'}\nApplies to: ${appliesTo || 'N/A'}`);
+    setIsGeoFenceModalOpen(false);
+  };
+
   return (
     <HRLayout>
       <HRPageLayout title="Attendance">
-        {/* Search Bar */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '24px' }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '10px',
-            background: colors.cardBg,
-            border: `1px solid ${colors.containerBorder}`,
-            borderRadius: '10px',
-            padding: '6px 6px 6px 16px',
-            width: '360px',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-          }}>
-            <i className="fas fa-search" style={{ fontSize: '13px', color: colors.textMuted }} />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search employees..."
-              style={{
-                flex: 1,
-                border: 'none',
-                outline: 'none',
-                fontSize: '13px',
-                color: colors.textDark,
-                fontFamily: "'Poppins', sans-serif",
-                background: 'transparent',
-                padding: '8px 0',
-              }}
-            />
-            <button
-              style={{
-                background: colors.primary,
-                color: '#fff',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '8px 18px',
-                fontSize: '13px',
-                fontWeight: 500,
-                cursor: 'pointer',
-                fontFamily: "'Poppins', sans-serif",
-                transition: 'background 0.2s',
-              }}
-              onMouseEnter={(e) => e.target.style.background = colors.primaryDark}
-              onMouseLeave={(e) => e.target.style.background = colors.primary}
-            >
-              Search
-            </button>
-          </div>
-        </div>
+        {/* Search Bar Removed */}
 
         {/* Top Row: Geo-fence + Your Attendance */}
         <div style={{
@@ -138,20 +232,47 @@ export default function Attendance() {
             padding: '24px',
             boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
           }}>
-            <h3 style={{
-              fontSize: '16px',
-              fontWeight: 600,
-              color: colors.textDark,
-              margin: '0 0 4px 0',
+            <div style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              justifyContent: 'space-between',
+              marginBottom: '4px',
             }}>
-              Geo-fence configuration
-            </h3>
+              <h3 style={{
+                fontSize: '16px',
+                fontWeight: 600,
+                color: colors.textDark,
+                margin: 0,
+              }}>
+                Geo-fence configuration
+              </h3>
+              <button
+                onClick={() => setIsGeoFenceModalOpen(true)}
+                style={{
+                  background: colors.cardBg,
+                  color: colors.primary,
+                  border: `1px solid ${colors.primary}`,
+                  borderRadius: '8px',
+                  padding: '7px 14px',
+                  fontSize: '12px',
+                  fontWeight: 500,
+                  cursor: 'pointer',
+                  fontFamily: "'Poppins', sans-serif",
+                  whiteSpace: 'nowrap',
+                  transition: 'background 0.2s',
+                }}
+                onMouseEnter={(e) => e.target.style.background = colors.primaryLight}
+                onMouseLeave={(e) => e.target.style.background = colors.cardBg}
+              >
+                Edit location &amp; radius
+              </button>
+            </div>
             <p style={{
               fontSize: '13px',
               color: colors.textGray,
               margin: '0 0 16px 0',
             }}>
-              Set by Admin – attendance button is only active inside this radius
+              HR sets office location &amp; radius only – each employee marks their own attendance and verification happens on their device
             </p>
 
             <div style={{
@@ -178,7 +299,7 @@ export default function Attendance() {
                 boxShadow: '0 1px 4px rgba(0,0,0,0.06)',
               }}>
                 <i className="fas fa-map-marker-alt" style={{ color: colors.primary, fontSize: '11px' }} />
-                B.A.C
+                BUKC
               </div>
               <div style={{
                 position: 'absolute',
@@ -212,21 +333,27 @@ export default function Attendance() {
               </div>
             </div>
 
-            <div style={{ 
-              display: 'flex', 
-              flexDirection: 'column', 
-              gap: '8px',
-              background: colors.bg,
-              borderRadius: '10px',
-              padding: '14px 16px',
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '10px',
+              padding: '2px 2px',
             }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '13px', color: colors.textGray }}>Office coordinates</span>
+                <span style={{ fontSize: '13px', fontWeight: 500, color: colors.textDark }}>24.8608° N, 67.0104° E</span>
+              </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: '13px', color: colors.textGray }}>Configured radius</span>
                 <span style={{ fontSize: '13px', fontWeight: 500, color: colors.textDark }}>500m</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ fontSize: '13px', color: colors.textGray }}>Allowed range</span>
-                <span style={{ fontSize: '13px', fontWeight: 500, color: colors.textDark }}>200m – 2km</span>
+                <span style={{ fontSize: '13px', fontWeight: 500, color: colors.textDark }}>200 m – 2 km</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ fontSize: '13px', color: colors.textGray }}>Applies to</span>
+                <span style={{ fontSize: '13px', fontWeight: 500, color: colors.textDark }}>All employees</span>
               </div>
             </div>
           </div>
@@ -256,53 +383,79 @@ export default function Attendance() {
 
             <button
               onClick={handleCheckIn}
+              disabled={checkInStatus !== 'idle'}
               style={{
                 width: '120px',
                 height: '120px',
                 borderRadius: '50%',
-                background: isCheckedIn ? '#E8483E' : colors.primary,
+                background: currentCircle.bg,
                 color: '#fff',
                 border: 'none',
-                cursor: 'pointer',
-                fontSize: '16px',
+                cursor: checkInStatus === 'idle' ? 'pointer' : 'default',
+                fontSize: '15px',
                 fontWeight: 600,
                 fontFamily: "'Poppins', sans-serif",
-                boxShadow: `0 6px 20px ${isCheckedIn ? 'rgba(232,72,62,0.35)' : 'rgba(0,161,154,0.35)'}`,
+                boxShadow: `0 6px 20px ${currentCircle.shadow}`,
                 marginBottom: '18px',
                 transition: 'all 0.3s ease',
               }}
               onMouseEnter={(e) => {
-                e.target.style.transform = 'scale(1.03)';
+                if (checkInStatus === 'idle') e.target.style.transform = 'scale(1.03)';
               }}
               onMouseLeave={(e) => {
                 e.target.style.transform = 'scale(1)';
               }}
             >
-              {isCheckedIn ? 'Check out' : 'Check in'}
+              {currentCircle.label}
             </button>
 
-            <div style={{
-              background: colors.primaryLight,
-              borderRadius: '20px',
-              padding: '6px 16px',
-              marginBottom: '4px',
-            }}>
+            {checkInStatus === 'idle' && (
+              <>
+                <div style={{
+                  background: colors.primaryLight,
+                  borderRadius: '20px',
+                  padding: '6px 16px',
+                  marginBottom: '4px',
+                }}>
+                  <p style={{
+                    fontSize: '13px',
+                    fontWeight: 500,
+                    color: colors.primary,
+                    margin: 0,
+                  }}>
+                    Inside 500m radius
+                  </p>
+                </div>
+                <p style={{
+                  fontSize: '11px',
+                  color: colors.textMuted,
+                  margin: '6px 0 0 0',
+                }}>
+                  Auto disable outside the fence
+                </p>
+              </>
+            )}
+
+            {checkInStatus === 'verifying' && (
+              <p style={{
+                fontSize: '12px',
+                color: colors.textGray,
+                margin: 0,
+              }}>
+                Confirming your location within radius
+              </p>
+            )}
+
+            {checkInStatus === 'checked-in' && (
               <p style={{
                 fontSize: '13px',
                 fontWeight: 500,
-                color: colors.primary,
+                color: colors.checkedIn,
                 margin: 0,
               }}>
-                Inside 500m radius
+                Attendance marked: {checkInTime}
               </p>
-            </div>
-            <p style={{
-              fontSize: '11px',
-              color: colors.textMuted,
-              margin: '6px 0 0 0',
-            }}>
-              Auto disable outside the fence
-            </p>
+            )}
           </div>
         </div>
 
@@ -311,7 +464,7 @@ export default function Attendance() {
           background: colors.cardBg,
           border: `1px solid ${colors.containerBorder}`,
           borderRadius: '16px',
-          overflow: 'hidden',
+          overflow: 'visible',
           boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
         }}>
           <div style={{
@@ -332,9 +485,9 @@ export default function Attendance() {
             <button
               onClick={handleGenerateReport}
               style={{
-                background: colors.primary,
-                color: '#fff',
-                border: 'none',
+                background: colors.cardBg,
+                color: colors.primary,
+                border: `1px solid ${colors.primary}`,
                 borderRadius: '8px',
                 padding: '8px 18px',
                 fontSize: '13px',
@@ -343,52 +496,76 @@ export default function Attendance() {
                 fontFamily: "'Poppins', sans-serif",
                 transition: 'background 0.2s',
               }}
-              onMouseEnter={(e) => e.target.style.background = colors.primaryDark}
-              onMouseLeave={(e) => e.target.style.background = colors.primary}
+              onMouseEnter={(e) => e.target.style.background = colors.primaryLight}
+              onMouseLeave={(e) => e.target.style.background = colors.cardBg}
             >
-              <i className="fas fa-file-alt" style={{ marginRight: '6px' }} />
-              Generate report
+              Generate attendance report
             </button>
+          </div>
+
+          {/* Filters Row */}
+          <div style={{
+            display: 'flex',
+            gap: '16px',
+            padding: '16px 24px',
+            borderBottom: `1px solid ${colors.border}`,
+            background: colors.bg,
+          }}>
+            {renderFilterDropdown('Filter by position', 'position', positionOptions, positionFilter, setPositionFilter)}
+            {renderFilterDropdown('Filter by project', 'project', projectOptions, projectFilter, setProjectFilter)}
+            {renderFilterDropdown('Filter by employee', 'employee', employeeOptions, employeeFilter, setEmployeeFilter)}
           </div>
 
           <div style={{
             display: 'flex',
+            alignItems: 'center',
             background: colors.tableHeaderBg,
             padding: '12px 24px',
           }}>
+            <div style={{ width: '28px', flexShrink: 0 }} />
             <div style={{
               flex: 2,
-              fontSize: '11px',
+              fontSize: '12px',
               fontWeight: 600,
-              color: '#ffffff',
-              letterSpacing: '0.5px',
-              textTransform: 'uppercase',
+              color: colors.tableHeaderText,
             }}>
-              Employee and Position
+              Employee
             </div>
             <div style={{
               flex: 1,
-              fontSize: '11px',
+              fontSize: '12px',
               fontWeight: 600,
-              color: '#ffffff',
-              letterSpacing: '0.5px',
-              textTransform: 'uppercase',
+              color: colors.tableHeaderText,
             }}>
-              Check In
+              Position
             </div>
             <div style={{
               flex: 1,
-              fontSize: '11px',
+              fontSize: '12px',
               fontWeight: 600,
-              color: '#ffffff',
-              letterSpacing: '0.5px',
-              textTransform: 'uppercase',
+              color: colors.tableHeaderText,
             }}>
-              Check Out
+              Project
+            </div>
+            <div style={{
+              flex: 1,
+              fontSize: '12px',
+              fontWeight: 600,
+              color: colors.tableHeaderText,
+            }}>
+              Check in
+            </div>
+            <div style={{
+              flex: 1,
+              fontSize: '12px',
+              fontWeight: 600,
+              color: colors.tableHeaderText,
+            }}>
+              Check out
             </div>
           </div>
 
-          {attendanceRecords.map((record, idx) => (
+          {filteredRecords.map((record, idx) => (
             <div
               key={idx}
               style={{
@@ -396,12 +573,15 @@ export default function Attendance() {
                 alignItems: 'center',
                 padding: '14px 24px',
                 borderTop: idx === 0 ? 'none' : `1px solid ${colors.border}`,
-                background: idx % 2 === 0 ? colors.cardBg : colors.bg,
+                background: colors.cardBg,
                 transition: 'background 0.15s',
               }}
               onMouseEnter={(e) => e.currentTarget.style.background = colors.primaryLight}
-              onMouseLeave={(e) => e.currentTarget.style.background = idx % 2 === 0 ? colors.cardBg : colors.bg}
+              onMouseLeave={(e) => e.currentTarget.style.background = colors.cardBg}
             >
+              <div style={{ width: '28px', flexShrink: 0 }}>
+                <input type="checkbox" style={{ width: '16px', height: '16px', cursor: 'pointer' }} />
+              </div>
               <div style={{ flex: 2, display: 'flex', alignItems: 'center', gap: '12px' }}>
                 <div style={{
                   width: '32px',
@@ -419,8 +599,14 @@ export default function Attendance() {
                   {record.initials}
                 </div>
                 <span style={{ fontSize: '14px', color: colors.textDark }}>
-                  {record.name} <span style={{ color: colors.textGray, fontSize: '13px' }}>· {record.role}</span>
+                  {record.name}
                 </span>
+              </div>
+              <div style={{ flex: 1, fontSize: '14px', color: colors.textDark }}>
+                {record.role}
+              </div>
+              <div style={{ flex: 1, fontSize: '14px', color: colors.textDark }}>
+                {record.project}
               </div>
               <div style={{ flex: 1, fontSize: '14px', color: colors.textDark, fontWeight: 500 }}>
                 {record.checkIn}
@@ -434,7 +620,7 @@ export default function Attendance() {
       </HRPageLayout>
 
       {/* ======================================== */}
-      {/* GENERATE REPORT MODAL – Static Calendar Removed */}
+      {/* GENERATE REPORT MODAL */}
       {/* ======================================== */}
       {isReportModalOpen && (
         <div style={{
@@ -470,7 +656,6 @@ export default function Attendance() {
               Generate attendance report
             </h2>
 
-            {/* Date Range – From & To – Native Date Pickers */}
             <div style={{ display: 'flex', gap: '12px', marginBottom: '20px', alignItems: 'center' }}>
               <div style={{ flex: 1 }}>
                 <label style={{
@@ -530,7 +715,6 @@ export default function Attendance() {
               </div>
             </div>
 
-            {/* Clear & Today Buttons */}
             <div style={{
               display: 'flex',
               gap: '10px',
@@ -570,7 +754,6 @@ export default function Attendance() {
               </button>
             </div>
 
-            {/* Generate Report Button */}
             <button
               onClick={handleGenerate}
               style={{
@@ -592,9 +775,230 @@ export default function Attendance() {
               Generate report
             </button>
 
-            {/* Close Button */}
             <button
               onClick={handleCloseModal}
+              style={{
+                position: 'absolute',
+                top: '12px',
+                right: '16px',
+                background: 'transparent',
+                border: 'none',
+                fontSize: '24px',
+                cursor: 'pointer',
+                color: '#666',
+              }}
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ======================================== */}
+      {/* CONFIGURE GEO-FENCE MODAL - EMPTY FIELDS */}
+      {/* ======================================== */}
+      {isGeoFenceModalOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.5)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 9999,
+        }}>
+          <div style={{
+            backgroundColor: '#fff',
+            borderRadius: '16px',
+            padding: '32px',
+            width: '100%',
+            maxWidth: '440px',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.15)',
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            position: 'relative',
+          }}>
+            <h2 style={{
+              fontSize: '20px',
+              fontWeight: 600,
+              color: '#1A1A1A',
+              margin: '0 0 24px 0',
+              fontFamily: "'Poppins', sans-serif",
+            }}>
+              Configure geo-fence
+            </h2>
+
+            {/* Office location */}
+            <div style={{ marginBottom: '18px' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '13px',
+                fontWeight: 500,
+                color: '#666666',
+                marginBottom: '4px',
+                fontFamily: "'Poppins', sans-serif",
+              }}>
+                Office location
+              </label>
+              <input
+                type="text"
+                value={officeLocation}
+                onChange={(e) => setOfficeLocation(e.target.value)}
+                placeholder="Enter office location"
+                style={{
+                  width: '100%',
+                  padding: '10px 14px',
+                  border: '1px solid #000000',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  outline: 'none',
+                  fontFamily: "'Poppins', sans-serif",
+                  boxSizing: 'border-box',
+                  background: '#fff',
+                }}
+              />
+            </div>
+
+            {/* Radius */}
+            <div style={{ marginBottom: '18px' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '13px',
+                fontWeight: 500,
+                color: '#666666',
+                marginBottom: '4px',
+                fontFamily: "'Poppins', sans-serif",
+              }}>
+                Radius
+              </label>
+              <input
+                type="text"
+                value={radius}
+                onChange={(e) => setRadius(e.target.value)}
+                placeholder="Enter radius (e.g. 200m)"
+                style={{
+                  width: '100%',
+                  padding: '10px 14px',
+                  border: '1px solid #000000',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  outline: 'none',
+                  fontFamily: "'Poppins', sans-serif",
+                  boxSizing: 'border-box',
+                  background: '#fff',
+                }}
+              />
+            </div>
+
+            {/* Coordinates - two inputs side by side */}
+            <div style={{ marginBottom: '18px' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '13px',
+                fontWeight: 500,
+                color: '#666666',
+                marginBottom: '4px',
+                fontFamily: "'Poppins', sans-serif",
+              }}>
+                Coordinates
+              </label>
+              <div style={{ display: 'flex', gap: '12px' }}>
+                <input
+                  type="text"
+                  value={latitude}
+                  onChange={(e) => setLatitude(e.target.value)}
+                  placeholder="Latitude"
+                  style={{
+                    flex: 1,
+                    padding: '10px 14px',
+                    border: '1px solid #000000',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    outline: 'none',
+                    fontFamily: "'Poppins', sans-serif",
+                    boxSizing: 'border-box',
+                    background: '#fff',
+                  }}
+                />
+                <input
+                  type="text"
+                  value={longitude}
+                  onChange={(e) => setLongitude(e.target.value)}
+                  placeholder="Longitude"
+                  style={{
+                    flex: 1,
+                    padding: '10px 14px',
+                    border: '1px solid #000000',
+                    borderRadius: '8px',
+                    fontSize: '14px',
+                    outline: 'none',
+                    fontFamily: "'Poppins', sans-serif",
+                    boxSizing: 'border-box',
+                    background: '#fff',
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Applies to */}
+            <div style={{ marginBottom: '24px' }}>
+              <label style={{
+                display: 'block',
+                fontSize: '13px',
+                fontWeight: 500,
+                color: '#666666',
+                marginBottom: '4px',
+                fontFamily: "'Poppins', sans-serif",
+              }}>
+                Applies to
+              </label>
+              <input
+                type="text"
+                value={appliesTo}
+                onChange={(e) => setAppliesTo(e.target.value)}
+                placeholder="Enter applies to (e.g. All employees)"
+                style={{
+                  width: '100%',
+                  padding: '10px 14px',
+                  border: '1px solid #000000',
+                  borderRadius: '8px',
+                  fontSize: '14px',
+                  outline: 'none',
+                  fontFamily: "'Poppins', sans-serif",
+                  boxSizing: 'border-box',
+                  background: '#fff',
+                }}
+              />
+            </div>
+
+            {/* Save Button */}
+            <button
+              onClick={handleSaveGeoFence}
+              style={{
+                width: '100%',
+                padding: '12px',
+                background: '#00A19A',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '8px',
+                fontSize: '15px',
+                fontWeight: 500,
+                cursor: 'pointer',
+                fontFamily: "'Poppins', sans-serif",
+                transition: 'background 0.2s',
+              }}
+              onMouseEnter={(e) => e.target.style.background = '#008a84'}
+              onMouseLeave={(e) => e.target.style.background = '#00A19A'}
+            >
+              Save
+            </button>
+
+            {/* Close Button */}
+            <button
+              onClick={() => setIsGeoFenceModalOpen(false)}
               style={{
                 position: 'absolute',
                 top: '12px',
