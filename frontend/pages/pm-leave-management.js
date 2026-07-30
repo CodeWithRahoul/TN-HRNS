@@ -128,10 +128,6 @@ export default function PMLeaveManagement() {
     return matchesSearch && matchesStatus;
   });
 
-  const pendingCount = leaveRequests.filter(r => r.status === 'Needs review' || r.status === 'Pending').length;
-  const approvedCount = leaveRequests.filter(r => r.status === 'Approved').length;
-  const rejectedCount = leaveRequests.filter(r => r.status === 'Rejected').length;
-
   const handleRowClick = (request) => {
     setSelectedRequest(request);
   };
@@ -324,88 +320,9 @@ export default function PMLeaveManagement() {
           )}
         </div>
 
-        {/* Stats Cards */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-          gap: '16px',
-          marginTop: '24px',
-        }}>
-          <div style={{
-            background: colors.cardBg,
-            border: `1px solid ${colors.border}`,
-            borderRadius: '12px',
-            padding: '18px 20px',
-            textAlign: 'center',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-            transition: 'transform 0.2s, box-shadow 0.2s',
-            cursor: 'pointer',
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04)'; }}
-          >
-            <div style={{ fontSize: '24px', fontWeight: 700, color: '#F59E0B' }}>{pendingCount}</div>
-            <div style={{ fontSize: '13px', color: colors.textGray, fontWeight: 500 }}>
-              <i className="fas fa-clock" style={{ marginRight: '6px', color: colors.primary }} /> Pending
-            </div>
-          </div>
-          <div style={{
-            background: colors.cardBg,
-            border: `1px solid ${colors.border}`,
-            borderRadius: '12px',
-            padding: '18px 20px',
-            textAlign: 'center',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-            transition: 'transform 0.2s, box-shadow 0.2s',
-            cursor: 'pointer',
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04)'; }}
-          >
-            <div style={{ fontSize: '24px', fontWeight: 700, color: '#10B981' }}>{approvedCount}</div>
-            <div style={{ fontSize: '13px', color: colors.textGray, fontWeight: 500 }}>
-              <i className="fas fa-check-circle" style={{ marginRight: '6px', color: colors.primary }} /> Approved
-            </div>
-          </div>
-          <div style={{
-            background: colors.cardBg,
-            border: `1px solid ${colors.border}`,
-            borderRadius: '12px',
-            padding: '18px 20px',
-            textAlign: 'center',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-            transition: 'transform 0.2s, box-shadow 0.2s',
-            cursor: 'pointer',
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04)'; }}
-          >
-            <div style={{ fontSize: '24px', fontWeight: 700, color: '#EF4444' }}>{rejectedCount}</div>
-            <div style={{ fontSize: '13px', color: colors.textGray, fontWeight: 500 }}>
-              <i className="fas fa-times-circle" style={{ marginRight: '6px', color: colors.primary }} /> Rejected
-            </div>
-          </div>
-          <div style={{
-            background: colors.cardBg,
-            border: `1px solid ${colors.border}`,
-            borderRadius: '12px',
-            padding: '18px 20px',
-            textAlign: 'center',
-            boxShadow: '0 1px 3px rgba(0,0,0,0.04)',
-            transition: 'transform 0.2s, box-shadow 0.2s',
-            cursor: 'pointer',
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.08)'; }}
-          onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.04)'; }}
-          >
-            <div style={{ fontSize: '24px', fontWeight: 700, color: colors.primary }}>{leaveRequests.length}</div>
-            <div style={{ fontSize: '13px', color: colors.textGray, fontWeight: 500 }}>
-              <i className="fas fa-list" style={{ marginRight: '6px', color: colors.primary }} /> Total
-            </div>
-          </div>
-        </div>
+        {/* ─── STATS CARDS REMOVED ────────────────────────────────────── */}
 
-        {/* ─── DETAIL MODAL (COMPACT & PROFESSIONAL) ────────────────────── */}
+        {/* ─── DETAIL MODAL ─────────────────────────────────────────────── */}
         {selectedRequest && (
           <div
             style={{

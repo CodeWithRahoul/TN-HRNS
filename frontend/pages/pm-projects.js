@@ -50,7 +50,6 @@ export default function PMProjects() {
       project: selectedProject?.title
     });
     setIsBacklogModalOpen(false);
-    // Reset form
     setBacklogTask('');
     setBacklogType('Design');
     setBacklogPriority('Medium');
@@ -61,13 +60,13 @@ export default function PMProjects() {
     primary: '#00A19A',
     primaryDark: '#008a84',
     primaryLight: '#E6F5F4',
-    border: '#e2e8e8',
+    border: '#000000',
     textDark: '#1A1A1A',
     textGray: '#666666',
     textMuted: '#8a8f98',
     bg: '#F4FBFB',
     cardBg: '#FFFFFF',
-    tableHeaderBg: '#B8BFC6',
+    tableHeaderBg: '#9AA3AD',
     statusOnTrack: '#1FA25A',
   };
 
@@ -113,6 +112,12 @@ export default function PMProjects() {
         { initials: 'AR', name: 'Abdul rehman', role: 'Backend developer' },
         { initials: 'HJ', name: 'Hafeez jamil', role: 'AI engineer' },
       ],
+      documents: [
+        { name: 'Figma file', uploadedBy: 'Sara kareem' },
+        { name: 'SRS document', uploadedBy: 'Sara kareem' },
+        { name: 'Analytics dashboard – brand brief', uploadedBy: 'Abdul ramnan' },
+        { name: 'Payments API – architecture notes', uploadedBy: 'Sara kareem' },
+      ]
     },
     {
       id: 2,
@@ -128,6 +133,11 @@ export default function PMProjects() {
         { initials: 'TR', name: 'Tehreem Raja', role: 'Frontend developer' },
         { initials: 'AR', name: 'Abdul rehman', role: 'Backend developer' },
       ],
+      documents: [
+        { name: 'HRMS Architecture', uploadedBy: 'Bilal Ahmed' },
+        { name: 'Database Schema', uploadedBy: 'Abdul rehman' },
+        { name: 'UI Mockups', uploadedBy: 'Sara Koreem' },
+      ]
     },
     {
       id: 3,
@@ -143,11 +153,16 @@ export default function PMProjects() {
         { initials: 'TR', name: 'Tehreem Raja', role: 'Frontend developer' },
         { initials: 'AR', name: 'Abdul rehman', role: 'Backend developer' },
       ],
+      documents: [
+        { name: 'Brand Guidelines', uploadedBy: 'Sara Koreem' },
+        { name: 'Landing Page Design', uploadedBy: 'Sara Koreem' },
+        { name: 'SEO Report', uploadedBy: 'Abdul rehman' },
+      ]
     },
   ];
 
   // ─── TABS ──────────────────────────────────────────────────────────────
-  const tabs = ['Overview', 'Backlog', 'Sprint info', 'Milestones', 'Documents', 'Activity timeline'];
+  const tabs = ['Overview', 'Backlog', 'Sprint info', 'Milestones', 'Documents'];
 
   // ─── DETAIL VIEW ──────────────────────────────────────────────────────
   if (selectedProject) {
@@ -346,7 +361,6 @@ export default function PMProjects() {
           {/* ─── BACKLOG TAB ──────────────────────────────────── */}
           {activeTab === 'Backlog' && (
             <div>
-              {/* Add Backlog button */}
               <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '24px' }}>
                 <button
                   onClick={() => setIsBacklogModalOpen(true)}
@@ -366,7 +380,6 @@ export default function PMProjects() {
                 </button>
               </div>
 
-              {/* Table card */}
               <div style={{
                 background: colors.cardBg,
                 border: `1px solid ${colors.border}`,
@@ -374,7 +387,6 @@ export default function PMProjects() {
                 padding: '20px',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
               }}>
-                {/* Filter + Move to sprint row */}
                 <div style={{
                   display: 'flex',
                   justifyContent: 'space-between',
@@ -457,7 +469,6 @@ export default function PMProjects() {
                   </button>
                 </div>
 
-                {/* Table */}
                 <div style={{ overflowX: 'auto' }}>
                   <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                     <thead>
@@ -518,8 +529,70 @@ export default function PMProjects() {
             </div>
           )}
 
+          {/* ─── DOCUMENTS TAB ──────────────────────────────────── */}
+          {activeTab === 'Documents' && (
+            <div style={{
+              background: colors.cardBg,
+              border: `1px solid ${colors.border}`,
+              borderRadius: '16px',
+              overflow: 'hidden',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+            }}>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: '2fr 1fr 1fr',
+                background: colors.tableHeaderBg,
+                padding: '14px 24px',
+              }}>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: colors.textDark }}>
+                  Document
+                </div>
+                <div style={{ fontSize: '13px', fontWeight: 600, color: colors.textDark }}>
+                  Uploaded by
+                </div>
+                <div />
+              </div>
+
+              {selectedProject.documents && selectedProject.documents.length > 0 ? (
+                selectedProject.documents.map((doc, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '2fr 1fr 1fr',
+                      padding: '16px 24px',
+                      alignItems: 'center',
+                      borderTop: `1px solid #E5E7EB`,
+                    }}
+                  >
+                    <div style={{ fontSize: '14px', color: colors.textDark }}>
+                      {doc.name}
+                    </div>
+                    <div style={{ fontSize: '14px', color: colors.textDark }}>
+                      {doc.uploadedBy}
+                    </div>
+                    <div>
+                      <a href="#" style={{ fontSize: '14px', color: '#2E6BE6', textDecoration: 'none', cursor: 'pointer' }}>
+                        Download
+                      </a>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div style={{
+                  padding: '40px 20px',
+                  textAlign: 'center',
+                  color: colors.textMuted,
+                }}>
+                  <i className="fas fa-folder-open" style={{ fontSize: '32px', display: 'block', marginBottom: '12px' }} />
+                  No documents uploaded for this project.
+                </div>
+              )}
+            </div>
+          )}
+
           {/* ─── OTHER TABS (placeholder) ──────────────────────── */}
-          {activeTab !== 'Overview' && activeTab !== 'Backlog' && (
+          {activeTab !== 'Overview' && activeTab !== 'Backlog' && activeTab !== 'Documents' && (
             <div style={{
               background: colors.cardBg,
               border: `1px solid ${colors.border}`,
@@ -564,7 +637,6 @@ export default function PMProjects() {
                   position: 'relative',
                 }}
               >
-                {/* Close button */}
                 <button
                   onClick={() => setIsBacklogModalOpen(false)}
                   style={{
@@ -598,7 +670,6 @@ export default function PMProjects() {
                   {selectedProject.title}
                 </p>
 
-                {/* Task */}
                 <div style={{ marginBottom: '16px' }}>
                   <label style={{
                     display: 'block',
@@ -628,7 +699,6 @@ export default function PMProjects() {
                   />
                 </div>
 
-                {/* Type */}
                 <div style={{ marginBottom: '16px' }}>
                   <label style={{
                     display: 'block',
@@ -661,7 +731,6 @@ export default function PMProjects() {
                   </select>
                 </div>
 
-                {/* Priority */}
                 <div style={{ marginBottom: '16px' }}>
                   <label style={{
                     display: 'block',
@@ -694,7 +763,6 @@ export default function PMProjects() {
                   </select>
                 </div>
 
-                {/* Assignee */}
                 <div style={{ marginBottom: '24px' }}>
                   <label style={{
                     display: 'block',
@@ -728,7 +796,6 @@ export default function PMProjects() {
                   </select>
                 </div>
 
-                {/* Create Backlog button */}
                 <button
                   onClick={handleCreateBacklog}
                   style={{
