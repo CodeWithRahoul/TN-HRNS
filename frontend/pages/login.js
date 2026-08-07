@@ -31,25 +31,39 @@ export default function Login() {
     }
     setApiError('');
 
-    // ✅ Hardcoded PM credentials for testing
+    // ─── Hardcoded credentials for testing ────────────────
     if (email === 'pm@trustnexus.com' && password === '123456') {
-      // Manually set PM role and redirect
       localStorage.setItem('userRole', 'PM');
       localStorage.setItem('userData', JSON.stringify({ name: 'PM User', email: 'pm@example.com' }));
       router.push('/pm-dashboard');
       return;
     }
+    if (email === 'fd@trustnexus.com' && password === '123456') {
+      localStorage.setItem('userRole', 'FD');
+      localStorage.setItem('userData', JSON.stringify({ name: 'FD User', email: 'fd@example.com' }));
+      router.push('/fd-dashboard');
+      return;
+    }
+    if (email === 'hr@trustnexus.com' && password === '123456') {
+      localStorage.setItem('userRole', 'HR');
+      localStorage.setItem('userData', JSON.stringify({ name: 'HR User', email: 'hr@example.com' }));
+      router.push('/hr-dashboard');
+      return;
+    }
+    if (email === 'employee@example.com' && password === 'employee123') {
+      localStorage.setItem('userRole', 'Employee');
+      localStorage.setItem('userData', JSON.stringify({ name: 'Employee User', email: 'employee@example.com' }));
+      router.push('/dashboard');
+      return;
+    }
 
-    // Normal login flow for other users
+    // ─── Normal login flow ──────────────────────────────────
     const result = await login(email, password, role);
     if (result.success) {
-      if (role === 'HR') {
-        router.push('/hr-dashboard');
-      } else if (role === 'PM') {
-        router.push('/pm-dashboard');
-      } else {
-        router.push('/dashboard');
-      }
+      if (role === 'HR') router.push('/hr-dashboard');
+      else if (role === 'PM') router.push('/pm-dashboard');
+      else if (role === 'FD') router.push('/fd-dashboard');
+      else router.push('/dashboard');
     } else {
       setApiError(result.error || 'Invalid email or password. Please try again.');
     }
@@ -76,12 +90,12 @@ export default function Login() {
           <div style={{ marginBottom: '16px' }}>
             <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '4px' }}>Login as</label>
             <div style={{ display: 'flex', gap: '12px' }}>
-              {['Employee', 'HR', 'PM'].map(r => (
-                <button 
-                  key={r} 
-                  type="button" 
-                  className={`role-btn ${role === r ? 'active' : ''}`} 
-                  style={{ flex: 1 }} 
+              {['Employee', 'HR', 'PM', 'FD'].map(r => (
+                <button
+                  key={r}
+                  type="button"
+                  className={`role-btn ${role === r ? 'active' : ''}`}
+                  style={{ flex: 1 }}
                   onClick={() => setRole(r)}
                 >
                   {r}
@@ -93,21 +107,21 @@ export default function Login() {
           <button className="auth-google"><i className="fab fa-google"></i> Continue with Google</button>
           <div className="auth-or">OR EMAIL</div>
 
-          <Input 
-            label="Email Address" 
-            type="email" 
-            placeholder="name@email.com" 
-            value={email} 
-            onChange={(e) => setEmail(e.target.value)} 
-            error={errors.email} 
+          <Input
+            label="Email Address"
+            type="email"
+            placeholder="name@email.com"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            error={errors.email}
           />
-          <Input 
-            label="Password" 
-            type="password" 
-            placeholder="••••••" 
-            value={password} 
-            onChange={(e) => setPassword(e.target.value)} 
-            error={errors.password} 
+          <Input
+            label="Password"
+            type="password"
+            placeholder="••••••"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            error={errors.password}
           />
 
           <div className="auth-forgot-password"><a>Forget Password?</a></div>
