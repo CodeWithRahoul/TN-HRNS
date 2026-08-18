@@ -30,7 +30,7 @@ export default function FDLayout({ children }) {
     { name: 'Dashboard', path: '/fd-dashboard', icon: 'fa-chart-pie' },
     { name: 'Attendance', path: '/fd-attendance', icon: 'fa-clipboard-list' },
     { name: 'Projects', path: '/fd-projects', icon: 'fa-project-diagram' },
-    { name: 'Leave management', path: '/fd-leave-management', icon: 'fa-clock' },
+    { name: 'Leave Requests', path: '/fd-leave-management', icon: 'fa-clock' },
     { name: 'Internal communication', path: '/fd-internal-communication', icon: 'fa-comments' },
   ];
 
