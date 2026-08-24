@@ -28,10 +28,11 @@ export default function FDLayout({ children }) {
 
   const navItems = [
     { name: 'Dashboard', path: '/fd-dashboard', icon: 'fa-chart-pie' },
-    { name: 'Attendance', path: '/fd-attendance', icon: 'fa-clipboard-list' },
     { name: 'Projects', path: '/fd-projects', icon: 'fa-project-diagram' },
-    { name: 'Leave Requests', path: '/fd-leave-management', icon: 'fa-clock' },
+    { name: 'Attendance', path: '/fd-attendance', icon: 'fa-clipboard-list' },
+    { name: 'Leave request', path: '/fd-leave-management', icon: 'fa-clock' },
     { name: 'Internal communication', path: '/fd-internal-communication', icon: 'fa-comments' },
+    { name: 'Announcements', path: '/fd-announcements', icon: 'fa-bullhorn' }, // ✅ New
   ];
 
   const handleLogout = () => {
@@ -42,7 +43,7 @@ export default function FDLayout({ children }) {
   };
 
   return (
-    <div className="hr-layout"> {/* same CSS class as HR/PM, reuse styles */}
+    <div className="hr-layout">
       <div className="hr-body">
         <aside className="hr-sidebar">
           <div className="sidebar-profile">

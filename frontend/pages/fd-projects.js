@@ -9,13 +9,9 @@ export default function FDProjects() {
   const [teamMessageText, setTeamMessageText] = useState('');
   const [showSeniorInput, setShowSeniorInput] = useState(false);
   const [showTeamInput, setShowTeamInput] = useState(false);
-  const [submitModalTask, setSubmitModalTask] = useState(null);
-  const [submitLink, setSubmitLink] = useState('');
-  const [submitFile, setSubmitFile] = useState(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const [askModalTask, setAskModalTask] = useState(null);
-  const [askInput, setAskInput] = useState('');
-  const [askMessages, setAskMessages] = useState([]);
+  const [viewWorkTask, setViewWorkTask] = useState(null);
+  const [selectedMilestone, setSelectedMilestone] = useState(null);
+  const [milestoneComment, setMilestoneComment] = useState('');
 
   const colors = {
     primary: '#00A19A',
@@ -27,22 +23,21 @@ export default function FDProjects() {
     textMuted: '#8a8f98',
     bg: '#F4FBFB',
     cardBg: '#FFFFFF',
-    tableHeaderBg: '#2C3E50',
     statusOnTrack: '#1FA25A',
   };
 
   const cardShadow = '0 4px 20px rgba(0,0,0,0.06)';
 
   const avatarColors = {
-    'BA': '#3B5BDB',
-    'SK': '#F4B400',
-    'TR': '#2FBF71',
-    'AR': '#E8483E',
-    'RK': '#8B5CF6',
-    'HJ': '#F97316',
-    'CEO': '#0F766E',
-    'CTO': '#C2660C',
-    'HR': '#2B6FC0',
+    BA: '#3B5BDB',
+    SK: '#F4B400',
+    TR: '#2FBF71',
+    AR: '#E8483E',
+    RK: '#8B5CF6',
+    HJ: '#F97316',
+    CEO: '#0F766E',
+    CTO: '#C2660C',
+    HR: '#2B6FC0',
   };
 
   const projects = [
@@ -50,14 +45,15 @@ export default function FDProjects() {
       id: 1,
       title: 'Nexovate Portal',
       subtitle: 'Client-developer portal · AI scope reports',
-      description: 'Nexovate is an AI-powered platform that helps non-technical clients transform their ideas into structured software projects. By answering AI-generated multiple-choice questions, clients receive a detailed project scope document that is published on the platform. Developers can browse and choose projects that match their expertise, while Nexovate manages project documentation, administration, and secure payment processing to ensure a smooth and organized experience.',
+      description:
+        "Nexovate is an AI-powered platform that helps non-technical clients transform their ideas into structured software projects. By answering AI-generated multiple-choice questions, clients receive a detailed project scope document that is published on the platform. Developers can browse and choose projects that match their expertise, while Nexovate manages project documentation, administration, and secure payment processing to ensure a smooth and organized experience.",
       status: 'Active',
       statusLabel: 'On track',
       startDate: '7 Jun 2026',
       endDate: '24 Jul 2026',
       team: [
-        { initials: 'BA', name: 'Bilal Ahmed', role: 'Project Manager' },
-        { initials: 'RK', name: 'Raheel Khan', role: 'Team Lead' },
+        { initials: 'BA', name: 'Bilal ahmed', role: 'Project Manager' },
+        { initials: 'RK', name: 'Raheel khan', role: 'Team lead' },
         { initials: 'SK', name: 'Sara kareem', role: 'UI/UX designer' },
         { initials: 'TR', name: 'Sara afzal', role: 'Frontend developer' },
         { initials: 'AR', name: 'Abdul rehman', role: 'Backend developer' },
@@ -68,33 +64,118 @@ export default function FDProjects() {
         { initials: 'CTO', name: 'CTO', role: 'CTO' },
         { initials: 'HR', name: 'HR', role: 'HR' },
       ],
-      tasks: [
+      // "Tasks submitted" list — read-only work submissions
+      submittedTasks: [
         {
           id: 1,
-          title: 'Fix responsive nav overflow',
-          description: 'Nav collapses incorrectly below 768px on the Alpha marketing site — hamburger icon overlaps the logo.',
-          assignedBy: 'Bilal ahmed',
-          priority: 'High',
-          deadline: '25 Aug 2026',
-          progress: 20,
+          title: 'Design high-fidelity UI screens',
+          submittedBy: 'Sara kareem . UI/UX designer',
+          link: 'https/www.figma/prototype',
+          fileName: 'high-fidelity UI screens',
         },
         {
           id: 2,
-          title: 'Update API documentation',
-          description: 'Document the new tasks endpoints including auth headers and error codes.',
-          assignedBy: 'Bilal ahmed',
-          priority: 'High',
-          deadline: '25 Aug 2026',
-          progress: 20,
+          title: 'Prepare design system & components',
+          submittedBy: 'Sara kareem . UI/UX designer',
+          link: 'https/www.figma/design-system',
+          fileName: 'design-system-components',
         },
         {
           id: 3,
-          title: 'Optimize product image loading',
-          description: 'Add lazy-loading and responsive srcset to the product gallery component.',
-          assignedBy: 'Bilal ahmed',
-          priority: 'Low',
-          deadline: '25 Aug 2026',
+          title: 'Implement Figma designs',
+          submittedBy: 'Bilal ahmed . Frontend dev',
+          link: 'https/www.github.com/nexovate/pr-114',
+          fileName: 'figma-implementation',
+        },
+        {
+          id: 4,
+          title: 'Design database schema',
+          submittedBy: 'Abdul rehman . Backend dev',
+          link: 'https/www.github.com/nexovate/schema',
+          fileName: 'db-schema',
+        },
+      ],
+      // "Milestones" — top-level project milestones
+      milestones: [
+        {
+          id: 1,
+          title: 'Discovery & scoping',
+          status: 'Completed',
+          progress: 100,
+          people: 'Bilal Rauf, Rehan Naqvi',
+          start: '20 May 2026',
+          end: '2 Jun 2026',
+          deliverables: ['Requirement doc', 'Scope document', 'Client approval'],
+          comments: 3,
+        },
+        {
+          id: 2,
+          title: 'UI/UX designing',
+          status: 'Completed',
+          progress: 100,
+          people: 'Sara Kareem',
+          start: '3 Jun 2026',
+          end: '5 Jul 2026',
+          deliverables: ['Wireframes', 'UI mockups', 'Design system'],
+          comments: 5,
+        },
+        {
+          id: 3,
+          title: 'Frontend development',
+          status: 'In Progress',
+          progress: 30,
+          people: 'Hamza Jamali, Faisal Khalid',
+          start: '12 Mar 2026',
+          end: '15 May 2026',
+          deliverables: ['Home page', 'Login/Sign up'],
+          comments: 4,
+          // Sub-tasks shown on the milestone details page
+          tasks: [
+            { id: 1, title: 'Home page', description: 'Main landing page for the portal', status: 'Completed', progress: 100, start: '12 Mar 2026', end: '25 Mar 2026', assignee: 'Abdul Rehman' },
+            { id: 2, title: 'Login page', description: 'User login with validation', status: 'Completed', progress: 100, start: '16 Mar 2026', end: '28 Mar 2026', assignee: 'Hassan Ali' },
+            { id: 3, title: 'Signup page', description: 'User registration and verification', status: 'Completed', progress: 100, start: '20 Mar 2026', end: '2 Apr 2026', assignee: 'Usman Khan' },
+            { id: 4, title: 'Dashboard (Main)', description: 'Overview dashboard for users', status: 'In Progress', progress: 40, start: '26 Mar 2026', end: '20 Apr 2026', assignee: 'Sara Afzal' },
+            { id: 5, title: 'Project listing page', description: 'List all projects with filters', status: 'Pending', progress: 0, start: '5 Apr 2026', end: '18 Apr 2026', assignee: 'Bilal Ahmed' },
+            { id: 6, title: 'Project details page', description: 'Detailed view of a project', status: 'Pending', progress: 0, start: '10 Apr 2026', end: '25 Apr 2026', assignee: 'Hamza Jamali' },
+            { id: 7, title: 'Settings page', description: 'User profile and preferences', status: 'Pending', progress: 0, start: '20 Apr 2026', end: '30 Apr 2026', assignee: 'Faisal Khalid' },
+            { id: 8, title: 'Notifications page', description: 'Manage user notifications', status: 'On Hold', progress: 0, start: '15 Apr 2026', end: '29 Apr 2026', assignee: 'Ali Raza' },
+          ],
+          commentsThread: [
+            { author: 'Faisal Khalid', time: '2 May 2026, 10:30 AM', text: 'Dashboard UI is 40% complete. Charts integration is in progress.' },
+          ],
+        },
+        {
+          id: 4,
+          title: 'API integration',
+          status: 'Pending',
           progress: 0,
+          people: 'Hamza Jamali, Faisal Khalid',
+          start: '16 May 2026',
+          end: '20 Jun 2026',
+          deliverables: ['API connections', 'Data mapping', 'Integration tests'],
+          comments: 0,
+        },
+        {
+          id: 5,
+          title: 'Backend development',
+          status: 'Pending',
+          progress: 0,
+          people: 'Hamza Jamali, Faisal Khalid',
+          start: '21 Jun 2026',
+          end: '25 Jul 2026',
+          deliverables: ['Database setup', 'Core logic', 'Admin APIs'],
+          comments: 0,
+        },
+        {
+          id: 6,
+          title: 'Testing',
+          status: 'Pending',
+          progress: 0,
+          people: 'Hamza Jamali, Faisal Khalid',
+          start: '26 Jul 2026',
+          end: '7 Aug 2026',
+          deliverables: ['Test cases', 'Bug fixing', 'UAT'],
+          comments: 0,
         },
       ],
     },
@@ -102,7 +183,8 @@ export default function FDProjects() {
       id: 2,
       title: 'Marketing Site Refresh',
       subtitle: 'Public landing page & brand refresh',
-      description: 'A complete refresh of the company\'s public-facing marketing website. The project includes a new brand identity, responsive landing pages, SEO optimization, and integration with the company\'s CMS.',
+      description:
+        "A complete refresh of the company's public-facing marketing website. The project includes a new brand identity, responsive landing pages, SEO optimization, and integration with the company's CMS.",
       status: 'Completed',
       statusLabel: 'Delivered',
       startDate: '2 Feb 2026',
@@ -118,13 +200,15 @@ export default function FDProjects() {
         { initials: 'CTO', name: 'CTO', role: 'CTO' },
         { initials: 'HR', name: 'HR', role: 'HR' },
       ],
-      tasks: [],
+      submittedTasks: [],
+      milestones: [],
     },
     {
       id: 3,
       title: 'TN - HRMS',
       subtitle: 'Unified HR & project management system',
-      description: 'TN-HRMS is a comprehensive human resource management system that streamlines employee onboarding, leave tracking, attendance management, and performance reviews.',
+      description:
+        'TN-HRMS is a comprehensive human resource management system that streamlines employee onboarding, leave tracking, attendance management, and performance reviews.',
       status: 'Completed',
       statusLabel: 'Delivered',
       startDate: '10 Oct 2025',
@@ -140,7 +224,8 @@ export default function FDProjects() {
         { initials: 'CTO', name: 'CTO', role: 'CTO' },
         { initials: 'HR', name: 'HR', role: 'HR' },
       ],
-      tasks: [],
+      submittedTasks: [],
+      milestones: [],
     },
   ];
 
@@ -148,11 +233,13 @@ export default function FDProjects() {
     const project = projects.find((p) => p.id === projectId);
     setSelectedProject(project);
     setActiveTab('Overview');
+    setSelectedMilestone(null);
   };
 
   const handleBackToProjects = () => {
     setSelectedProject(null);
     setActiveTab('Overview');
+    setSelectedMilestone(null);
   };
 
   const handleSendMessage = () => {
@@ -169,82 +256,35 @@ export default function FDProjects() {
     setShowTeamInput(false);
   };
 
-  const openSubmitModal = (task) => {
-    setSubmitModalTask(task);
-    setSubmitLink('');
-    setSubmitFile(null);
-    setIsDragging(false);
-  };
-
-  const closeSubmitModal = () => {
-    setSubmitModalTask(null);
-    setSubmitLink('');
-    setSubmitFile(null);
-    setIsDragging(false);
-  };
-
-  const handleSubmitWork = () => {
-    alert(`Work submitted for: ${submitModalTask?.title}\nLink: ${submitLink || '—'}\nFile: ${submitFile ? submitFile.name : '—'}`);
-    closeSubmitModal();
-  };
-
-  const handleFileSelect = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setSubmitFile(e.target.files[0]);
-    }
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setIsDragging(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      setSubmitFile(e.dataTransfer.files[0]);
-    }
-  };
-
-  const openAskModal = (task) => {
-    setAskModalTask(task);
-    setAskInput('');
-    setAskMessages([
-      { sender: 'me', text: 'Quick question on the mobile breakpoint, is it 768px or 720px?', time: '11:45 AM' },
-      { sender: 'them', text: 'It is 720px.', time: '11:50 AM' },
-    ]);
-  };
-
-  const closeAskModal = () => {
-    setAskModalTask(null);
-    setAskInput('');
-    setAskMessages([]);
-  };
-
-  const handleSendAsk = () => {
-    if (!askInput.trim()) return;
-    const now = new Date();
-    let hours = now.getHours();
-    const minutes = now.getMinutes().toString().padStart(2, '0');
-    const ampm = hours >= 12 ? 'PM' : 'AM';
-    hours = hours % 12 || 12;
-    setAskMessages((prev) => [...prev, { sender: 'me', text: askInput, time: `${hours}:${minutes} ${ampm}` }]);
-    setAskInput('');
-  };
-
   const toggleSeniorInput = () => setShowSeniorInput(!showSeniorInput);
   const toggleTeamInput = () => setShowTeamInput(!showTeamInput);
 
-  const handleUpdateProgress = (taskId, progress) => {
-    setSelectedProject((prev) => {
-      if (!prev) return prev;
-      const updatedTasks = prev.tasks.map((task) =>
-        task.id === taskId ? { ...task, progress } : task
-      );
-      return { ...prev, tasks: updatedTasks };
-    });
+  const openViewWork = (task) => setViewWorkTask(task);
+  const closeViewWork = () => setViewWorkTask(null);
+
+  const openMilestone = (milestone) => {
+    if (!milestone.tasks) return; // only milestones with details drill down
+    setSelectedMilestone(milestone);
+    setActiveTab('Milestones');
   };
 
-  const activeProjects = projects.filter(p => p.status === 'Active');
-  const completedProjects = projects.filter(p => p.status === 'Completed');
+  const closeMilestoneDetails = () => setSelectedMilestone(null);
 
-  // Shared card wrapper style
+  const handlePostComment = () => {
+    if (!milestoneComment.trim() || !selectedMilestone) return;
+    setSelectedMilestone((prev) => ({
+      ...prev,
+      commentsThread: [
+        ...(prev.commentsThread || []),
+        { author: 'You', time: 'Just now', text: milestoneComment },
+      ],
+    }));
+    setMilestoneComment('');
+  };
+
+  const activeProjects = projects.filter((p) => p.status === 'Active');
+  const completedProjects = projects.filter((p) => p.status === 'Completed');
+
   const cardStyle = {
     background: colors.cardBg,
     border: `1px solid ${colors.border}`,
@@ -253,9 +293,35 @@ export default function FDProjects() {
     boxShadow: cardShadow,
   };
 
+  const statusPillStyle = (status) => {
+    const map = {
+      Completed: { bg: '#DDF3E6', color: '#1FA25A' },
+      'In Progress': { bg: '#E4EEFC', color: '#2563AE' },
+      Pending: { bg: '#EEF0F2', color: '#6B7280' },
+      'On Hold': { bg: '#FDF1DE', color: '#B7791F' },
+    };
+    const s = map[status] || map.Pending;
+    return {
+      display: 'inline-block',
+      background: s.bg,
+      color: s.color,
+      fontWeight: 600,
+      padding: '3px 12px',
+      borderRadius: '12px',
+      fontSize: '11.5px',
+    };
+  };
+
+  const progressBarColor = (status) => {
+    if (status === 'Completed') return '#1FA25A';
+    if (status === 'In Progress') return colors.primary;
+    if (status === 'On Hold') return '#E0A63C';
+    return '#D9DEE2';
+  };
+
   // ─── DETAIL VIEW ──────────────────────────────────────────────────────
   if (selectedProject) {
-    const tabs = ['Overview', 'Tasks'];
+    const tabs = ['Overview', 'Tasks submitted', 'Milestones'];
     const isOnTrack = selectedProject.status === 'Active';
 
     return (
@@ -264,7 +330,7 @@ export default function FDProjects() {
           {/* Back Button */}
           <div style={{ marginBottom: '16px' }}>
             <button
-              onClick={handleBackToProjects}
+              onClick={selectedMilestone ? closeMilestoneDetails : handleBackToProjects}
               style={{
                 display: 'flex',
                 alignItems: 'center',
@@ -280,41 +346,37 @@ export default function FDProjects() {
               }}
             >
               <i className="fas fa-arrow-left" style={{ fontSize: '14px' }} />
-              Back to Projects
+              {selectedMilestone ? 'Back to Projects' : 'Back to Projects'}
             </button>
           </div>
 
           {/* Title, subtitle & Tabs */}
           <div style={{ marginBottom: '20px' }}>
-            <h2 style={{
-              fontSize: 'clamp(22px, 3vw, 28px)',
-              fontWeight: 700,
-              color: colors.textDark,
-              margin: '0 0 4px 0',
-            }}>
-              {selectedProject.title}
+            <h2 style={{ fontSize: 'clamp(22px, 3vw, 28px)', fontWeight: 700, color: colors.textDark, margin: '0 0 4px 0' }}>
+              {selectedMilestone ? selectedMilestone.title : selectedProject.title}
             </h2>
-            <p style={{
-              fontSize: '14px',
-              color: colors.textGray,
-              margin: 0,
-            }}>
-              {selectedProject.subtitle}
+            <p style={{ fontSize: '14px', color: colors.textGray, margin: 0 }}>
+              {selectedMilestone ? 'Milestone details' : selectedProject.subtitle}
             </p>
           </div>
 
-          <div style={{
-            display: 'flex',
-            gap: 'clamp(20px, 2vw, 32px)',
-            borderBottom: `1px solid ${colors.border}`,
-            marginBottom: '24px',
-            overflowX: 'auto',
-            flexWrap: 'nowrap',
-          }}>
+          <div
+            style={{
+              display: 'flex',
+              gap: 'clamp(20px, 2vw, 32px)',
+              borderBottom: `1px solid ${colors.border}`,
+              marginBottom: '24px',
+              overflowX: 'auto',
+              flexWrap: 'nowrap',
+            }}
+          >
             {tabs.map((tab) => (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => {
+                  setActiveTab(tab);
+                  setSelectedMilestone(null);
+                }}
                 style={{
                   background: 'transparent',
                   border: 'none',
@@ -336,36 +398,22 @@ export default function FDProjects() {
 
           {/* ─── TAB: Overview ──────────────────────────────────── */}
           {activeTab === 'Overview' && (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: '20px',
-              alignItems: 'start',
-            }}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+                gap: '20px',
+                alignItems: 'start',
+              }}
+            >
               {/* LEFT COLUMN: Description + Message seniors */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-
-                {/* Description card */}
                 <div style={cardStyle}>
-                  <h3 style={{
-                    fontSize: '16px',
-                    fontWeight: 600,
-                    color: colors.textDark,
-                    margin: '0 0 10px 0',
-                  }}>
-                    Description
-                  </h3>
-                  <p style={{
-                    fontSize: '14px',
-                    lineHeight: '1.7',
-                    color: colors.textGray,
-                    margin: '0 0 16px 0',
-                  }}>
+                  <h3 style={{ fontSize: '16px', fontWeight: 600, color: colors.textDark, margin: '0 0 10px 0' }}>Description</h3>
+                  <p style={{ fontSize: '14px', lineHeight: '1.7', color: colors.textGray, margin: '0 0 16px 0' }}>
                     {selectedProject.description}
                   </p>
-
                   <div style={{ borderTop: `1px solid ${colors.border}`, marginBottom: '14px' }} />
-
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
                       <span style={{ color: colors.textGray }}>Status</span>
@@ -384,16 +432,8 @@ export default function FDProjects() {
                   </div>
                 </div>
 
-                {/* Message seniors card */}
                 <div style={cardStyle}>
-                  <h3 style={{
-                    fontSize: '16px',
-                    fontWeight: 600,
-                    color: colors.textDark,
-                    margin: '0 0 12px 0',
-                  }}>
-                    Message seniors
-                  </h3>
+                  <h3 style={{ fontSize: '16px', fontWeight: 600, color: colors.textDark, margin: '0 0 12px 0' }}>Message seniors</h3>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {selectedProject.seniors.map((senior, idx) => (
                       <div
@@ -407,24 +447,24 @@ export default function FDProjects() {
                           borderRadius: '10px',
                         }}
                       >
-                        <div style={{
-                          width: '28px',
-                          height: '28px',
-                          borderRadius: '50%',
-                          background: avatarColors[senior.initials] || '#ccc',
-                          color: '#fff',
-                          fontSize: '10px',
-                          fontWeight: 700,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          flexShrink: 0,
-                        }}>
+                        <div
+                          style={{
+                            width: '28px',
+                            height: '28px',
+                            borderRadius: '50%',
+                            background: avatarColors[senior.initials] || '#ccc',
+                            color: '#fff',
+                            fontSize: '10px',
+                            fontWeight: 700,
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            flexShrink: 0,
+                          }}
+                        >
                           {senior.initials}
                         </div>
-                        <span style={{ fontSize: '13px', fontWeight: 500, color: colors.textDark, flex: 1 }}>
-                          {senior.name}
-                        </span>
+                        <span style={{ fontSize: '13px', fontWeight: 500, color: colors.textDark, flex: 1 }}>{senior.name}</span>
                         <button
                           aria-label={`Message ${senior.name}`}
                           onClick={toggleSeniorInput}
@@ -487,8 +527,8 @@ export default function FDProjects() {
                               fontFamily: "'Poppins', sans-serif",
                               transition: 'background 0.2s',
                             }}
-                            onMouseEnter={(e) => e.target.style.background = colors.primaryDark}
-                            onMouseLeave={(e) => e.target.style.background = colors.primary}
+                            onMouseEnter={(e) => (e.target.style.background = colors.primaryDark)}
+                            onMouseLeave={(e) => (e.target.style.background = colors.primary)}
                           >
                             Send
                           </button>
@@ -501,14 +541,7 @@ export default function FDProjects() {
 
               {/* RIGHT COLUMN: Team card */}
               <div style={cardStyle}>
-                <h3 style={{
-                  fontSize: '16px',
-                  fontWeight: 600,
-                  color: colors.textDark,
-                  margin: '0 0 14px 0',
-                }}>
-                  Team
-                </h3>
+                <h3 style={{ fontSize: '16px', fontWeight: 600, color: colors.textDark, margin: '0 0 14px 0' }}>Team</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {selectedProject.team.map((member, idx) => (
                     <div
@@ -522,28 +555,26 @@ export default function FDProjects() {
                         borderRadius: '10px',
                       }}
                     >
-                      <div style={{
-                        width: '32px',
-                        height: '32px',
-                        borderRadius: '50%',
-                        background: avatarColors[member.initials] || '#ccc',
-                        color: '#fff',
-                        fontSize: '11px',
-                        fontWeight: 700,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        flexShrink: 0,
-                      }}>
+                      <div
+                        style={{
+                          width: '32px',
+                          height: '32px',
+                          borderRadius: '50%',
+                          background: avatarColors[member.initials] || '#ccc',
+                          color: '#fff',
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                        }}
+                      >
                         {member.initials}
                       </div>
                       <div style={{ flex: 1 }}>
-                        <div style={{ fontSize: '13.5px', fontWeight: 600, color: colors.textDark }}>
-                          {member.name}
-                        </div>
-                        <div style={{ fontSize: '12px', color: colors.textGray }}>
-                          {member.role}
-                        </div>
+                        <div style={{ fontSize: '13.5px', fontWeight: 600, color: colors.textDark }}>{member.name}</div>
+                        <div style={{ fontSize: '12px', color: colors.textGray }}>{member.role}</div>
                       </div>
                       <button
                         aria-label={`Message ${member.name}`}
@@ -608,8 +639,8 @@ export default function FDProjects() {
                           fontFamily: "'Poppins', sans-serif",
                           transition: 'background 0.2s',
                         }}
-                        onMouseEnter={(e) => e.target.style.background = colors.primaryDark}
-                        onMouseLeave={(e) => e.target.style.background = colors.primary}
+                        onMouseEnter={(e) => (e.target.style.background = colors.primaryDark)}
+                        onMouseLeave={(e) => (e.target.style.background = colors.primary)}
                       >
                         Send
                       </button>
@@ -620,8 +651,8 @@ export default function FDProjects() {
             </div>
           )}
 
-          {/* ─── TAB: Tasks (image-matched design) ─────────────── */}
-          {activeTab === 'Tasks' && (
+          {/* ─── TAB: Tasks submitted ───────────────────────────── */}
+          {activeTab === 'Tasks submitted' && (
             <div
               className="fd-tasks-scroll"
               style={{
@@ -634,261 +665,269 @@ export default function FDProjects() {
               }}
             >
               <style>{`
-                .fd-tasks-scroll::-webkit-scrollbar {
-                  width: 10px;
-                }
-                .fd-tasks-scroll::-webkit-scrollbar-track {
-                  background: ${colors.bg};
-                  border-radius: 8px;
-                }
-                .fd-tasks-scroll::-webkit-scrollbar-thumb {
-                  background: ${colors.primary};
-                  border-radius: 8px;
-                }
-                .fd-tasks-scroll::-webkit-scrollbar-thumb:hover {
-                  background: ${colors.primaryDark};
-                }
+                .fd-tasks-scroll::-webkit-scrollbar { width: 10px; }
+                .fd-tasks-scroll::-webkit-scrollbar-track { background: ${colors.bg}; border-radius: 8px; }
+                .fd-tasks-scroll::-webkit-scrollbar-thumb { background: ${colors.primary}; border-radius: 8px; }
+                .fd-tasks-scroll::-webkit-scrollbar-thumb:hover { background: ${colors.primaryDark}; }
               `}</style>
-              {selectedProject.tasks && selectedProject.tasks.length > 0 ? (
-                selectedProject.tasks.map((task, index) => {
-                  const milestones = [10, 20, 40, 60, 80, 100];
-                  const isHighPriority = task.priority === 'High';
-                  const priorityColor = isHighPriority ? '#DC2626' : '#4B5563';
-                  const priorityBg = isHighPriority ? '#FDE7E7' : '#EEF0F2';
-                  const isLast = index === selectedProject.tasks.length - 1;
-
+              {selectedProject.submittedTasks && selectedProject.submittedTasks.length > 0 ? (
+                selectedProject.submittedTasks.map((task, index) => {
+                  const isLast = index === selectedProject.submittedTasks.length - 1;
                   return (
-                    <div
-                      key={task.id}
-                      style={{
-                        padding: '22px 0',
-                        borderBottom: isLast ? 'none' : `1px solid #E8ECEE`,
-                      }}
-                    >
-                      {/* Task Title */}
-                      <h3 style={{
-                        fontSize: '16px',
-                        fontWeight: 700,
-                        color: colors.textDark,
-                        margin: '0 0 4px 0',
-                      }}>
-                        {task.title}
-                      </h3>
-
-                      {/* Description */}
-                      <p style={{
-                        fontSize: '13px',
-                        color: colors.textGray,
-                        margin: '0 0 12px 0',
-                        lineHeight: '1.6',
-                      }}>
-                        {task.description}
-                      </p>
-
-                      {/* Meta pills: Assigned by, Priority, Deadline */}
-                      <div style={{
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                        gap: '8px',
-                        marginBottom: '16px',
-                      }}>
-                        <span style={{
+                    <div key={task.id} style={{ padding: '22px 0', borderBottom: isLast ? 'none' : '1px solid #E8ECEE' }}>
+                      <h3 style={{ fontSize: '16px', fontWeight: 700, color: colors.textDark, margin: '0 0 10px 0' }}>{task.title}</h3>
+                      <span
+                        style={{
                           display: 'inline-block',
-                          background: '#EAF2FB',
+                          background: '#E4EEFC',
                           color: '#2563AE',
-                          fontWeight: 600,
-                          padding: '3px 12px',
-                          borderRadius: '12px',
-                          fontSize: '11.5px',
-                        }}>
-                          Assigned by {task.assignedBy}
-                        </span>
-                        <span style={{
-                          display: 'inline-block',
-                          background: priorityBg,
-                          color: priorityColor,
-                          fontWeight: 600,
-                          padding: '3px 12px',
-                          borderRadius: '12px',
-                          fontSize: '11.5px',
-                        }}>
-                          {task.priority}
-                        </span>
-                        <span style={{
-                          display: 'inline-block',
-                          background: '#FDEDE3',
-                          color: '#C2540C',
-                          fontWeight: 600,
-                          padding: '3px 12px',
-                          borderRadius: '12px',
-                          fontSize: '11.5px',
-                        }}>
-                          Deadline {task.deadline}
-                        </span>
-                      </div>
-
-                      {/* Milestone track */}
-                      <div style={{ marginBottom: '18px' }}>
-                        <div style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          gap: 'clamp(10px, 3vw, 28px)',
-                          position: 'relative',
-                          maxWidth: '480px',
-                          margin: '0 auto',
-                        }}>
-                          {milestones.map((pct, i) => {
-                            const isDone = task.progress >= pct;
-                            const isLastMilestone = i === milestones.length - 1;
-                            return (
-                              <div key={pct} style={{ display: 'flex', alignItems: 'center', flex: isLastMilestone ? '0 0 auto' : 1 }}>
-                                <button
-                                  onClick={() => handleUpdateProgress(task.id, pct)}
-                                  aria-label={`Mark ${pct}% complete`}
-                                  style={{
-                                    width: '30px',
-                                    height: '30px',
-                                    borderRadius: '50%',
-                                    border: 'none',
-                                    background: isDone ? colors.primary : '#D9DEE2',
-                                    color: '#fff',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    cursor: 'pointer',
-                                    flexShrink: 0,
-                                    fontSize: '12px',
-                                    transition: 'background 0.2s',
-                                  }}
-                                >
-                                  {isDone ? <i className="fas fa-check" /> : null}
-                                </button>
-                                {!isLastMilestone && (
-                                  <div style={{
-                                    flex: 1,
-                                    height: '2px',
-                                    background: task.progress >= milestones[i + 1] ? colors.primary : '#D9DEE2',
-                                    minWidth: '12px',
-                                  }} />
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
-                        <div style={{
-                          display: 'flex',
-                          justifyContent: 'center',
-                          gap: 'clamp(18px, 4vw, 40px)',
-                          maxWidth: '480px',
-                          margin: '6px auto 0 auto',
-                        }}>
-                          {milestones.map((pct) => (
-                            <span key={pct} style={{
-                              fontSize: '11px',
-                              color: colors.textMuted,
-                              width: '30px',
-                              textAlign: 'center',
-                            }}>
-                              {pct}%
-                            </span>
-                          ))}
-                        </div>
-                        <p style={{
-                          textAlign: 'center',
-                          fontSize: '11.5px',
-                          color: colors.textMuted,
-                          margin: '8px 0 0 0',
-                        }}>
-                          Click a milestone to mark it complete
-                        </p>
-                      </div>
-
-                      {/* Action buttons */}
-                      <div style={{
-                        display: 'flex',
-                        gap: '12px',
-                        flexWrap: 'wrap',
-                      }}>
+                          fontWeight: 500,
+                          padding: '4px 12px',
+                          borderRadius: '8px',
+                          fontSize: '12px',
+                          marginBottom: '14px',
+                        }}
+                      >
+                        Submitted by {task.submittedBy}
+                      </span>
+                      <div>
                         <button
-                          onClick={() => openSubmitModal(task)}
+                          onClick={() => openViewWork(task)}
                           style={{
-                            padding: '8px 20px',
-                            background: colors.primary,
-                            color: '#fff',
-                            border: 'none',
-                            borderRadius: '8px',
-                            fontSize: '13px',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                            fontFamily: "'Poppins', sans-serif",
-                            transition: 'background 0.2s',
-                          }}
-                          onMouseEnter={(e) => e.target.style.background = colors.primaryDark}
-                          onMouseLeave={(e) => e.target.style.background = colors.primary}
-                        >
-                          Submit work
-                        </button>
-                        <button
-                          onClick={() => openAskModal(task)}
-                          style={{
-                            padding: '8px 20px',
+                            padding: '10px 20px',
                             background: '#fff',
                             color: colors.textDark,
-                            border: `1px solid #D9DEE2`,
+                            border: '1px solid #D9DEE2',
                             borderRadius: '8px',
                             fontSize: '13px',
-                            fontWeight: 600,
+                            fontWeight: 700,
                             cursor: 'pointer',
                             fontFamily: "'Poppins', sans-serif",
-                            transition: 'all 0.2s',
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.background = colors.bg;
-                            e.currentTarget.style.borderColor = colors.primary;
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.background = '#fff';
-                            e.currentTarget.style.borderColor = '#D9DEE2';
                           }}
                         >
-                          Ask a question
+                          View work
                         </button>
                       </div>
                     </div>
                   );
                 })
               ) : (
-                <div style={{
-                  padding: '40px 20px',
-                  textAlign: 'center',
-                  color: colors.textMuted,
-                }}>
+                <div style={{ padding: '40px 20px', textAlign: 'center', color: colors.textMuted }}>
                   <i className="fas fa-tasks" style={{ fontSize: '36px', display: 'block', marginBottom: '12px', color: colors.primary }} />
-                  <h3 style={{ fontSize: '16px', fontWeight: 600, color: colors.textDark, margin: 0 }}>No tasks assigned</h3>
-                  <p style={{ fontSize: '14px', margin: '6px 0 0 0' }}>Tasks for this project will appear here.</p>
+                  <h3 style={{ fontSize: '16px', fontWeight: 600, color: colors.textDark, margin: 0 }}>No work submitted yet</h3>
+                  <p style={{ fontSize: '14px', margin: '6px 0 0 0' }}>Submitted tasks for this project will appear here.</p>
                 </div>
               )}
             </div>
           )}
 
-          {/* ─── TAB: Documents ────────────────────────────────── */}
-          {activeTab === 'Documents' && (
-            <div style={{
-              ...cardStyle,
-              padding: '40px 20px',
-              textAlign: 'center',
-              color: colors.textMuted,
-            }}>
-              <i className="fas fa-file-alt" style={{ fontSize: '36px', display: 'block', marginBottom: '12px', color: colors.primary }} />
-              <h3 style={{ fontSize: '16px', fontWeight: 600, color: colors.textDark, margin: 0 }}>Documents</h3>
-              <p style={{ fontSize: '14px', margin: '6px 0 0 0' }}>Project documents will be available here.</p>
+          {/* ─── TAB: Milestones (list or drill-down details) ─── */}
+          {activeTab === 'Milestones' && !selectedMilestone && (
+            <div style={{ ...cardStyle, padding: '0', overflowX: 'auto' }}>
+              {selectedProject.milestones && selectedProject.milestones.length > 0 ? (
+                <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '900px' }}>
+                  <thead>
+                    <tr style={{ borderBottom: `1px solid #E8ECEE` }}>
+                      {['Milestone', 'Status & Progress', 'Schedule', 'Deliverables', 'Comments'].map((h) => (
+                        <th
+                          key={h}
+                          style={{
+                            textAlign: 'left',
+                            padding: '16px 20px',
+                            fontSize: '12.5px',
+                            fontWeight: 700,
+                            color: colors.primary,
+                          }}
+                        >
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedProject.milestones.map((m) => (
+                      <tr
+                        key={m.id}
+                        onClick={() => openMilestone(m)}
+                        style={{
+                          borderBottom: '1px solid #E8ECEE',
+                          cursor: m.tasks ? 'pointer' : 'default',
+                          background: m.status === 'In Progress' ? colors.primaryLight : 'transparent',
+                        }}
+                      >
+                        <td style={{ padding: '16px 20px', verticalAlign: 'top' }}>
+                          <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
+                            <div
+                              style={{
+                                width: '22px',
+                                height: '22px',
+                                borderRadius: '50%',
+                                flexShrink: 0,
+                                marginTop: '2px',
+                                background: m.progress === 100 ? colors.primary : m.status === 'In Progress' ? colors.primary : '#D9DEE2',
+                                color: '#fff',
+                                fontSize: '11px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                              }}
+                            >
+                              {m.progress === 100 ? <i className="fas fa-check" /> : null}
+                            </div>
+                            <div>
+                              <div style={{ fontSize: '14px', fontWeight: 700, color: colors.textDark }}>{m.title}</div>
+                              <div style={{ fontSize: '12px', color: colors.textGray }}>{m.status === 'In Progress' ? 'In progress' : m.status}</div>
+                              <div style={{ fontSize: '12px', color: colors.textGray }}>{m.people}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td style={{ padding: '16px 20px', verticalAlign: 'top', minWidth: '160px' }}>
+                          <span style={statusPillStyle(m.status)}>{m.status}</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '8px' }}>
+                            <div style={{ flex: 1, height: '6px', background: '#E8ECEE', borderRadius: '4px', overflow: 'hidden' }}>
+                              <div style={{ width: `${m.progress}%`, height: '100%', background: progressBarColor(m.status) }} />
+                            </div>
+                            <span style={{ fontSize: '12px', color: colors.textGray, fontWeight: 600 }}>{m.progress}%</span>
+                          </div>
+                        </td>
+                        <td style={{ padding: '16px 20px', verticalAlign: 'top', fontSize: '12.5px', color: colors.textGray }}>
+                          <div>Start: {m.start}</div>
+                          <div>End: {m.end}</div>
+                        </td>
+                        <td style={{ padding: '16px 20px', verticalAlign: 'top', fontSize: '12.5px', color: colors.textGray }}>
+                          <ul style={{ margin: 0, paddingLeft: '16px' }}>
+                            {m.deliverables.map((d, i) => (
+                              <li key={i}>{d}</li>
+                            ))}
+                          </ul>
+                        </td>
+                        <td style={{ padding: '16px 20px', verticalAlign: 'top', fontSize: '12.5px', color: colors.textGray }}>
+                          <i className="far fa-comment" /> {m.comments}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div style={{ padding: '40px 20px', textAlign: 'center', color: colors.textMuted }}>
+                  <i className="fas fa-flag-checkered" style={{ fontSize: '36px', display: 'block', marginBottom: '12px', color: colors.primary }} />
+                  <h3 style={{ fontSize: '16px', fontWeight: 600, color: colors.textDark, margin: 0 }}>No milestones yet</h3>
+                  <p style={{ fontSize: '14px', margin: '6px 0 0 0' }}>Milestones for this project will appear here.</p>
+                </div>
+              )}
             </div>
           )}
-          {/* ─── Submit Work Modal ─────────────────────────────── */}
-          {submitModalTask && (
+
+          {/* ─── Milestone details drill-down ───────────────────── */}
+          {activeTab === 'Milestones' && selectedMilestone && (
+            <>
+              <div style={{ ...cardStyle, padding: '0', overflowX: 'auto', marginBottom: '20px' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '900px' }}>
+                  <thead>
+                    <tr style={{ borderBottom: '1px solid #E8ECEE' }}>
+                      {['Task', 'Status', 'Completion', 'Start Date', 'End Date', 'Assignee'].map((h) => (
+                        <th key={h} style={{ textAlign: 'left', padding: '14px 20px', fontSize: '12.5px', fontWeight: 700, color: colors.textDark }}>
+                          {h}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedMilestone.tasks.map((t) => (
+                      <tr
+                        key={t.id}
+                        style={{
+                          borderBottom: '1px solid #E8ECEE',
+                          background: t.status === 'On Hold' ? '#FDF6E9' : 'transparent',
+                        }}
+                      >
+                        <td style={{ padding: '14px 20px', verticalAlign: 'top' }}>
+                          <div style={{ fontSize: '13.5px', fontWeight: 700, color: colors.textDark }}>{t.title}</div>
+                          <div style={{ fontSize: '12px', color: colors.textGray }}>{t.description}</div>
+                        </td>
+                        <td style={{ padding: '14px 20px', verticalAlign: 'top' }}>
+                          <span style={statusPillStyle(t.status)}>{t.status}</span>
+                        </td>
+                        <td style={{ padding: '14px 20px', verticalAlign: 'top', minWidth: '150px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <div style={{ flex: 1, height: '6px', background: '#E8ECEE', borderRadius: '4px', overflow: 'hidden' }}>
+                              <div style={{ width: `${t.progress}%`, height: '100%', background: progressBarColor(t.status) }} />
+                            </div>
+                            <span style={{ fontSize: '12px', color: colors.textGray, fontWeight: 600 }}>{t.progress}%</span>
+                          </div>
+                        </td>
+                        <td style={{ padding: '14px 20px', verticalAlign: 'top', fontSize: '12.5px', color: colors.textGray }}>{t.start}</td>
+                        <td style={{ padding: '14px 20px', verticalAlign: 'top', fontSize: '12.5px', color: colors.textGray }}>{t.end}</td>
+                        <td style={{ padding: '14px 20px', verticalAlign: 'top', fontSize: '12.5px', color: colors.textDark, fontWeight: 500 }}>
+                          {t.assignee}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Comments */}
+              <div style={cardStyle}>
+                <h3 style={{ fontSize: '15px', fontWeight: 700, color: colors.textDark, margin: '0 0 12px 0' }}>Comments</h3>
+                <div style={{ display: 'flex', gap: '10px', marginBottom: '16px' }}>
+                  <input
+                    type="text"
+                    value={milestoneComment}
+                    onChange={(e) => setMilestoneComment(e.target.value)}
+                    placeholder="Write a comment..."
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handlePostComment();
+                      }
+                    }}
+                    style={{
+                      flex: 1,
+                      padding: '10px 16px',
+                      border: '1px solid #D9DEE2',
+                      borderRadius: '10px',
+                      fontSize: '13px',
+                      outline: 'none',
+                      fontFamily: "'Poppins', sans-serif",
+                      color: colors.textDark,
+                    }}
+                  />
+                  <button
+                    onClick={handlePostComment}
+                    style={{
+                      padding: '10px 22px',
+                      background: colors.primary,
+                      color: '#fff',
+                      border: 'none',
+                      borderRadius: '10px',
+                      fontSize: '13px',
+                      fontWeight: 600,
+                      cursor: 'pointer',
+                      fontFamily: "'Poppins', sans-serif",
+                    }}
+                  >
+                    Post
+                  </button>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                  {(selectedMilestone.commentsThread || []).map((c, idx) => (
+                    <div key={idx}>
+                      <div style={{ fontSize: '13px', fontWeight: 700, color: colors.textDark }}>
+                        {c.author} <span style={{ fontWeight: 400, color: colors.textMuted, fontSize: '12px' }}>{c.time}</span>
+                      </div>
+                      <div style={{ fontSize: '13px', color: colors.textGray, marginTop: '2px' }}>{c.text}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
+          )}
+
+          {/* ─── View Work Modal (read-only) ────────────────────── */}
+          {viewWorkTask && (
             <div
-              onClick={closeSubmitModal}
+              onClick={closeViewWork}
               style={{
                 position: 'fixed',
                 inset: 0,
@@ -907,15 +946,14 @@ export default function FDProjects() {
                   borderRadius: '18px',
                   padding: '26px 28px 28px 28px',
                   width: '100%',
-                  maxWidth: '400px',
+                  maxWidth: '420px',
                   boxShadow: '0 20px 50px rgba(0,0,0,0.18)',
                   position: 'relative',
                   fontFamily: "'Poppins', sans-serif",
                 }}
               >
-                {/* Close button */}
                 <button
-                  onClick={closeSubmitModal}
+                  onClick={closeViewWork}
                   aria-label="Close"
                   style={{
                     position: 'absolute',
@@ -937,265 +975,45 @@ export default function FDProjects() {
                   <i className="fas fa-times" />
                 </button>
 
-                <h3 style={{
-                  fontSize: '20px',
-                  fontWeight: 700,
-                  color: colors.textDark,
-                  margin: '0 0 20px 0',
-                }}>
-                  Submit work
-                </h3>
+                <h3 style={{ fontSize: '20px', fontWeight: 700, color: colors.textDark, margin: '0 0 20px 0' }}>View work</h3>
 
-                {/* Link field */}
-                <label style={{
-                  display: 'block',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  color: colors.textDark,
-                  marginBottom: '8px',
-                }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: colors.textDark, marginBottom: '8px' }}>
                   Link
                 </label>
-                <input
-                  type="text"
-                  value={submitLink}
-                  onChange={(e) => setSubmitLink(e.target.value)}
-                  placeholder=""
+                <div
                   style={{
-                    width: '100%',
                     padding: '11px 14px',
-                    border: `1px solid #D9DEE2`,
+                    border: '1px solid #D9DEE2',
                     borderRadius: '10px',
                     fontSize: '13px',
-                    outline: 'none',
-                    fontFamily: "'Poppins', sans-serif",
-                    color: colors.textDark,
+                    color: colors.primary,
                     marginBottom: '20px',
-                    boxSizing: 'border-box',
+                    wordBreak: 'break-all',
                   }}
-                />
+                >
+                  {viewWorkTask.link}
+                </div>
 
-                {/* Upload field */}
-                <label style={{
-                  display: 'block',
-                  fontSize: '13px',
-                  fontWeight: 600,
-                  color: colors.textDark,
-                  marginBottom: '8px',
-                }}>
+                <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: colors.textDark, marginBottom: '8px' }}>
                   Upload your work
                 </label>
-                <label
-                  htmlFor="fd-file-upload"
-                  onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-                  onDragLeave={() => setIsDragging(false)}
-                  onDrop={handleDrop}
+                <div
                   style={{
                     display: 'flex',
-                    flexDirection: 'column',
                     alignItems: 'center',
-                    justifyContent: 'center',
+                    justifyContent: 'space-between',
                     gap: '8px',
-                    padding: '26px 16px',
-                    border: `1.5px dashed ${isDragging ? colors.primary : '#C7CDD2'}`,
-                    borderRadius: '12px',
-                    background: isDragging ? colors.primaryLight : colors.bg,
-                    cursor: 'pointer',
-                    textAlign: 'center',
-                    marginBottom: '20px',
-                    transition: 'all 0.15s',
+                    padding: '14px 16px',
+                    border: '1px solid #D9DEE2',
+                    borderRadius: '10px',
+                    background: colors.bg,
                   }}
                 >
-                  <i className="fas fa-cloud-upload-alt" style={{ fontSize: '20px', color: colors.textMuted }} />
-                  <span style={{ fontSize: '13.5px', fontWeight: 600, color: colors.textDark }}>
-                    {submitFile ? submitFile.name : 'Click to upload or drag files here'}
-                  </span>
-                  <span style={{ fontSize: '11.5px', color: colors.textMuted }}>
-                    Screenshots, PDFs, or docs — up to 25MB
-                  </span>
-                  <input
-                    id="fd-file-upload"
-                    type="file"
-                    onChange={handleFileSelect}
-                    style={{ display: 'none' }}
-                  />
-                </label>
-
-                {/* Submit button */}
-                <button
-                  onClick={handleSubmitWork}
-                  style={{
-                    width: '100%',
-                    padding: '12px',
-                    background: colors.primary,
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '10px',
-                    fontSize: '14px',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    fontFamily: "'Poppins', sans-serif",
-                    transition: 'background 0.2s',
-                  }}
-                  onMouseEnter={(e) => e.target.style.background = colors.primaryDark}
-                  onMouseLeave={(e) => e.target.style.background = colors.primary}
-                >
-                  Submit
-                </button>
-              </div>
-            </div>
-          )}
-          {/* ─── Ask a Question Modal ──────────────────────────── */}
-          {askModalTask && (
-            <div
-              onClick={closeAskModal}
-              style={{
-                position: 'fixed',
-                inset: 0,
-                background: 'rgba(20, 30, 35, 0.35)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                zIndex: 1000,
-                padding: '20px',
-              }}
-            >
-              <div
-                onClick={(e) => e.stopPropagation()}
-                style={{
-                  background: colors.cardBg,
-                  borderRadius: '18px',
-                  padding: '22px 24px 24px 24px',
-                  width: '100%',
-                  maxWidth: '440px',
-                  boxShadow: '0 20px 50px rgba(0,0,0,0.18)',
-                  position: 'relative',
-                  fontFamily: "'Poppins', sans-serif",
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}
-              >
-                {/* Header */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-                  <h3 style={{ fontSize: '19px', fontWeight: 700, color: colors.textDark, margin: 0 }}>
-                    Ask a question
-                  </h3>
-                  <button
-                    onClick={closeAskModal}
-                    aria-label="Close"
-                    style={{
-                      width: '30px',
-                      height: '30px',
-                      borderRadius: '50%',
-                      border: 'none',
-                      background: '#FBE4E4',
-                      color: '#DC2626',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: '13px',
-                      flexShrink: 0,
-                    }}
-                  >
-                    <i className="fas fa-times" />
-                  </button>
-                </div>
-
-                {/* Message thread */}
-                <div style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '12px',
-                  maxHeight: '280px',
-                  overflowY: 'auto',
-                  marginBottom: '16px',
-                  paddingRight: '4px',
-                }}>
-                  {askMessages.map((msg, idx) => (
-                    <div
-                      key={idx}
-                      style={{
-                        alignSelf: msg.sender === 'me' ? 'flex-end' : 'flex-start',
-                        maxWidth: '78%',
-                      }}
-                    >
-                      <div style={{
-                        background: msg.sender === 'me' ? colors.primary : colors.bg,
-                        color: msg.sender === 'me' ? '#fff' : colors.textDark,
-                        padding: '12px 16px',
-                        borderRadius: msg.sender === 'me' ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
-                        fontSize: '13.5px',
-                        lineHeight: '1.5',
-                      }}>
-                        {msg.text}
-                      </div>
-                      <div style={{
-                        fontSize: '10.5px',
-                        color: colors.textMuted,
-                        marginTop: '4px',
-                        textAlign: msg.sender === 'me' ? 'right' : 'left',
-                      }}>
-                        {msg.time}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Input row */}
-                <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                  <div style={{
-                    flex: 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    border: `1px solid #D9DEE2`,
-                    borderRadius: '10px',
-                    padding: '0 14px',
-                  }}>
-                    <input
-                      type="text"
-                      value={askInput}
-                      onChange={(e) => setAskInput(e.target.value)}
-                      placeholder="Type your message..."
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          handleSendAsk();
-                        }
-                      }}
-                      style={{
-                        flex: 1,
-                        padding: '11px 0',
-                        border: 'none',
-                        outline: 'none',
-                        fontSize: '13px',
-                        fontFamily: "'Poppins', sans-serif",
-                        color: colors.textDark,
-                        background: 'transparent',
-                      }}
-                    />
-                    <i className="far fa-eye" style={{ color: colors.textMuted, fontSize: '13px' }} />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <i className="far fa-file" style={{ color: colors.textMuted }} />
+                    <span style={{ fontSize: '13.5px', fontWeight: 600, color: colors.textDark }}>{viewWorkTask.fileName}</span>
                   </div>
-                  <button
-                    onClick={handleSendAsk}
-                    style={{
-                      padding: '11px 22px',
-                      background: colors.primary,
-                      color: '#fff',
-                      border: 'none',
-                      borderRadius: '10px',
-                      fontSize: '13px',
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                      fontFamily: "'Poppins', sans-serif",
-                      transition: 'background 0.2s',
-                      flexShrink: 0,
-                    }}
-                    onMouseEnter={(e) => e.target.style.background = colors.primaryDark}
-                    onMouseLeave={(e) => e.target.style.background = colors.primary}
-                  >
-                    Send
-                  </button>
+                  <i className="fas fa-file-upload" style={{ color: colors.textMuted }} />
                 </div>
               </div>
             </div>
@@ -1207,71 +1025,52 @@ export default function FDProjects() {
 
   // ─── GRID VIEW ──────────────────────────────────────────────────────
   const ProjectCard = ({ project }) => (
-    <div style={{
-      background: colors.cardBg,
-      border: `1px solid ${colors.border}`,
-      borderRadius: '12px',
-      padding: '18px 20px',
-      boxShadow: cardShadow,
-      transition: 'transform 0.15s, box-shadow 0.15s',
-      cursor: 'pointer',
-      display: 'flex',
-      flexDirection: 'column',
-    }}
-    onMouseEnter={(e) => {
-      e.currentTarget.style.transform = 'translateY(-2px)';
-      e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.10)';
-    }}
-    onMouseLeave={(e) => {
-      e.currentTarget.style.transform = 'translateY(0)';
-      e.currentTarget.style.boxShadow = cardShadow;
-    }}
+    <div
+      style={{
+        background: colors.cardBg,
+        border: `1px solid ${colors.border}`,
+        borderRadius: '12px',
+        padding: '18px 20px',
+        boxShadow: cardShadow,
+        transition: 'transform 0.15s, box-shadow 0.15s',
+        cursor: 'pointer',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.transform = 'translateY(-2px)';
+        e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.10)';
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.transform = 'translateY(0)';
+        e.currentTarget.style.boxShadow = cardShadow;
+      }}
     >
       <div style={{ marginBottom: '10px' }}>
-        <h3 style={{
-          fontSize: '15px',
-          fontWeight: 700,
-          color: colors.textDark,
-          margin: '0 0 2px 0',
-        }}>
-          {project.title}
-        </h3>
-        <p style={{
-          fontSize: '12px',
-          color: colors.textGray,
-          margin: 0,
-        }}>
-          {project.subtitle}
-        </p>
+        <h3 style={{ fontSize: '15px', fontWeight: 700, color: colors.textDark, margin: '0 0 2px 0' }}>{project.title}</h3>
+        <p style={{ fontSize: '12px', color: colors.textGray, margin: 0 }}>{project.subtitle}</p>
       </div>
 
-      <div style={{
-        borderTop: `1px solid ${colors.border}`,
-        marginBottom: '12px',
-      }} />
+      <div style={{ borderTop: `1px solid ${colors.border}`, marginBottom: '12px' }} />
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '14px' }}>
         {project.team.slice(0, 4).map((member, idx) => (
-          <div key={idx} style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            fontSize: '12px',
-            color: colors.textDark,
-          }}>
-            <div style={{
-              width: '20px',
-              height: '20px',
-              borderRadius: '50%',
-              background: avatarColors[member.initials] || '#999',
-              color: '#fff',
-              fontSize: '8px',
-              fontWeight: 700,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-            }}>
+          <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: colors.textDark }}>
+            <div
+              style={{
+                width: '20px',
+                height: '20px',
+                borderRadius: '50%',
+                background: avatarColors[member.initials] || '#999',
+                color: '#fff',
+                fontSize: '8px',
+                fontWeight: 700,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+              }}
+            >
               {member.initials}
             </div>
             <span style={{ fontWeight: 600 }}>{member.name}</span>
@@ -1279,9 +1078,7 @@ export default function FDProjects() {
           </div>
         ))}
         {project.team.length > 4 && (
-          <div style={{ fontSize: '11px', color: colors.textMuted, paddingLeft: '28px' }}>
-            +{project.team.length - 4} more
-          </div>
+          <div style={{ fontSize: '11px', color: colors.textMuted, paddingLeft: '28px' }}>+{project.team.length - 4} more</div>
         )}
       </div>
 
@@ -1308,32 +1105,16 @@ export default function FDProjects() {
     </div>
   );
 
-  const sectionTitleStyle = {
-    fontSize: '18px',
-    fontWeight: 700,
-    color: colors.textDark,
-    margin: '0 0 10px 0',
-  };
-
-  const sectionDividerStyle = {
-    borderTop: `1px solid ${colors.border}`,
-    marginBottom: '20px',
-  };
-
-  const gridStyle = {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 340px))',
-    gap: '20px',
-  };
+  const sectionTitleStyle = { fontSize: '18px', fontWeight: 700, color: colors.textDark, margin: '0 0 10px 0' };
+  const sectionDividerStyle = { borderTop: `1px solid ${colors.border}`, marginBottom: '20px' };
+  const gridStyle = { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 340px))', gap: '20px' };
 
   return (
     <FDLayout>
       <FDPageLayout title="Projects">
-        {/* ─── Active Projects ────────────────────────────── */}
         <div style={{ marginBottom: '32px' }}>
           <h2 style={sectionTitleStyle}>Active projects</h2>
           <div style={sectionDividerStyle} />
-
           {activeProjects.length > 0 ? (
             <div style={gridStyle}>
               {activeProjects.map((project) => (
@@ -1341,17 +1122,13 @@ export default function FDProjects() {
               ))}
             </div>
           ) : (
-            <p style={{ fontSize: '13px', color: colors.textMuted, textAlign: 'center', padding: '20px 0' }}>
-              No active projects.
-            </p>
+            <p style={{ fontSize: '13px', color: colors.textMuted, textAlign: 'center', padding: '20px 0' }}>No active projects.</p>
           )}
         </div>
 
-        {/* ─── Completed Projects ────────────────────────── */}
         <div>
           <h2 style={sectionTitleStyle}>Completed projects</h2>
           <div style={sectionDividerStyle} />
-
           {completedProjects.length > 0 ? (
             <div style={gridStyle}>
               {completedProjects.map((project) => (
@@ -1359,9 +1136,7 @@ export default function FDProjects() {
               ))}
             </div>
           ) : (
-            <p style={{ fontSize: '13px', color: colors.textMuted, textAlign: 'center', padding: '20px 0' }}>
-              No completed projects.
-            </p>
+            <p style={{ fontSize: '13px', color: colors.textMuted, textAlign: 'center', padding: '20px 0' }}>No completed projects.</p>
           )}
         </div>
       </FDPageLayout>
