@@ -30,7 +30,7 @@ export default function CELLayout({ children }) {
     { name: 'Dashboard', path: '/ceo-dashboard', icon: 'fa-chart-pie' },
     { name: 'Projects', path: '/ceo-projects', icon: 'fa-project-diagram' },
     { name: 'Attendance', path: '/ceo-attendance', icon: 'fa-clipboard-list' },
-    { name: 'Leave request', path: '/ceo-leave-management', icon: 'fa-clock' },
+    { name: 'Leave Approvals', path: '/ceo-leave-management', icon: 'fa-clock' },
     { name: 'Internal communication', path: '/ceo-internal-communication', icon: 'fa-comments' },
     { name: 'Announcements', path: '/ceo-announcements', icon: 'fa-bullhorn' },
   ];
