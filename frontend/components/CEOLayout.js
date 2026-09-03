@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 
-export default function CELLayout({ children }) {
+export default function CEOLayout({ children }) {
   const router = useRouter();
   const [user, setUser] = useState({ name: 'CEO User', role: 'CEO' });
 
@@ -30,9 +30,9 @@ export default function CELLayout({ children }) {
     { name: 'Dashboard', path: '/ceo-dashboard', icon: 'fa-chart-pie' },
     { name: 'Projects', path: '/ceo-projects', icon: 'fa-project-diagram' },
     { name: 'Attendance', path: '/ceo-attendance', icon: 'fa-clipboard-list' },
-    { name: 'Leave Approvals', path: '/ceo-leave-management', icon: 'fa-clock' },
+    { name: 'Leave management', path: '/ceo-leave-management', icon: 'fa-clock' },
+    { name: 'Hiring approvals', path: '/ceo-hiring-approvals', icon: 'fa-user-plus' }, // ✅ NEW
     { name: 'Internal communication', path: '/ceo-internal-communication', icon: 'fa-comments' },
-    { name: 'Announcements', path: '/ceo-announcements', icon: 'fa-bullhorn' },
   ];
 
   const handleLogout = () => {
