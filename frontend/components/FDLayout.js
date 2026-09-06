@@ -3,24 +3,51 @@ import { useState, useEffect } from 'react';
 
 export default function FDLayout({ children }) {
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState({ name: 'FD User', role: 'Frontend Developer' });
 
   useEffect(() => {
-    const savedData = localStorage.getItem('userData');
-    if (savedData) {
-      try {
-        const parsed = JSON.parse(savedData);
-        if (parsed && parsed.name) {
-          setUser({
-            name: parsed.name,
-            role: localStorage.getItem('userRole') || 'Frontend Developer'
-          });
-        }
-      } catch (err) {
-        console.error("Error parsing user data:", err);
+    const userData = localStorage.getItem('userData');
+    const userRole = localStorage.getItem('userRole');
+
+    if (!userData || !userRole) {
+      router.replace('/login');
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(userData);
+      if (parsed && parsed.name) {
+        setUser({
+          name: parsed.name,
+          role: userRole || 'Frontend Developer'
+        });
+      } else {
+        router.replace('/login');
+        return;
+      }
+    } catch (err) {
+      console.error("Error parsing user data:", err);
+      router.replace('/login');
+      return;
+    }
+
+    setLoading(false);
+  }, [router]);
+
+  // Role-based access: Only FD can access FD pages
+  useEffect(() => {
+    if (!loading) {
+      const userRole = localStorage.getItem('userRole');
+      if (userRole !== 'FD') {
+        if (userRole === 'HR') router.replace('/hr-dashboard');
+        else if (userRole === 'PM') router.replace('/pm-dashboard');
+        else if (userRole === 'CEO') router.replace('/ceo-dashboard');
+        else if (userRole === 'Employee') router.replace('/dashboard');
+        else router.replace('/login');
       }
     }
-  }, []);
+  }, [loading, router]);
 
   const initials = user.name
     ? user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
@@ -32,15 +59,19 @@ export default function FDLayout({ children }) {
     { name: 'Attendance', path: '/fd-attendance', icon: 'fa-clipboard-list' },
     { name: 'Leave request', path: '/fd-leave-management', icon: 'fa-clock' },
     { name: 'Internal communication', path: '/fd-internal-communication', icon: 'fa-comments' },
-    { name: 'Announcements', path: '/fd-announcements', icon: 'fa-bullhorn' }, // ✅ New
+    { name: 'Announcements', path: '/fd-announcements', icon: 'fa-bullhorn' },
   ];
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userData');
     localStorage.removeItem('userRole');
-    router.push('/');
+    router.push('/login');
   };
+
+  if (loading) {
+    return null;
+  }
 
   return (
     <div className="hr-layout">

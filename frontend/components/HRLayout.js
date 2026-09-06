@@ -3,33 +3,56 @@ import { useState, useEffect } from 'react';
 
 export default function HRLayout({ children }) {
   const router = useRouter();
-
-  // State to hold dynamic HR user data
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState({ name: 'HR User', role: 'HR' });
 
   useEffect(() => {
-    // Get the saved user data from localStorage
-    const savedData = localStorage.getItem('userData');
-    if (savedData) {
-      try {
-        const parsed = JSON.parse(savedData);
-        if (parsed && parsed.name) {
-          setUser({
-            name: parsed.name,
-            role: localStorage.getItem('userRole') || 'HR'
-          });
-        }
-      } catch (err) {
-        console.error("Error parsing user data:", err);
+    const userData = localStorage.getItem('userData');
+    const userRole = localStorage.getItem('userRole');
+
+    if (!userData || !userRole) {
+      router.replace('/login');
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(userData);
+      if (parsed && parsed.name) {
+        setUser({
+          name: parsed.name,
+          role: userRole || 'HR'
+        });
+      } else {
+        router.replace('/login');
+        return;
+      }
+    } catch (err) {
+      console.error("Error parsing user data:", err);
+      router.replace('/login');
+      return;
+    }
+
+    setLoading(false);
+  }, [router]);
+
+  // Role-based access: Only HR can access HR pages
+  useEffect(() => {
+    if (!loading) {
+      const userRole = localStorage.getItem('userRole');
+      if (userRole !== 'HR') {
+        if (userRole === 'PM') router.replace('/pm-dashboard');
+        else if (userRole === 'FD') router.replace('/fd-dashboard');
+        else if (userRole === 'CEO') router.replace('/ceo-dashboard');
+        else if (userRole === 'Employee') router.replace('/dashboard');
+        else router.replace('/login');
       }
     }
-  }, []);
+  }, [loading, router]);
 
   const initials = user.name
     ? user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
     : 'HR';
 
-  // ✅ Updated navItems – Letters aur Attendance add kar diye
   const navItems = [
     { name: 'Dashboard', path: '/hr-dashboard', icon: 'fa-chart-pie' },
     { name: 'Calendar', path: '/calendar', icon: 'fa-calendar-alt' },
@@ -37,16 +60,20 @@ export default function HRLayout({ children }) {
     { name: 'Leave management', path: '/leave-management', icon: 'fa-clock' },
     { name: 'Projects', path: '/projects', icon: 'fa-project-diagram' },
     { name: 'Internal communication', path: '/internal-communication', icon: 'fa-comments' },
-    { name: 'Letters', path: '/letters', icon: 'fa-envelope' },           // ✅ NEW
-    { name: 'Attendance', path: '/attendance', icon: 'fa-clipboard-list' }, // ✅ NEW
+    { name: 'Letters', path: '/letters', icon: 'fa-envelope' },
+    { name: 'Attendance', path: '/attendance', icon: 'fa-clipboard-list' },
   ];
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userData');
     localStorage.removeItem('userRole');
-    router.push('/');
+    router.push('/login');
   };
+
+  if (loading) {
+    return null;
+  }
 
   return (
     <div className="hr-layout">

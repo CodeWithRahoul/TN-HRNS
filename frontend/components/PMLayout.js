@@ -3,31 +3,56 @@ import { useState, useEffect } from 'react';
 
 export default function PMLayout({ children }) {
   const router = useRouter();
-
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState({ name: 'PM User', role: 'PM' });
 
   useEffect(() => {
-    const savedData = localStorage.getItem('userData');
-    if (savedData) {
-      try {
-        const parsed = JSON.parse(savedData);
-        if (parsed && parsed.name) {
-          setUser({
-            name: parsed.name,
-            role: localStorage.getItem('userRole') || 'PM'
-          });
-        }
-      } catch (err) {
-        console.error("Error parsing user data:", err);
+    const userData = localStorage.getItem('userData');
+    const userRole = localStorage.getItem('userRole');
+
+    if (!userData || !userRole) {
+      router.replace('/login');
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(userData);
+      if (parsed && parsed.name) {
+        setUser({
+          name: parsed.name,
+          role: userRole || 'PM'
+        });
+      } else {
+        router.replace('/login');
+        return;
+      }
+    } catch (err) {
+      console.error("Error parsing user data:", err);
+      router.replace('/login');
+      return;
+    }
+
+    setLoading(false);
+  }, [router]);
+
+  // Role-based access: Only PM can access PM pages
+  useEffect(() => {
+    if (!loading) {
+      const userRole = localStorage.getItem('userRole');
+      if (userRole !== 'PM') {
+        if (userRole === 'HR') router.replace('/hr-dashboard');
+        else if (userRole === 'FD') router.replace('/fd-dashboard');
+        else if (userRole === 'CEO') router.replace('/ceo-dashboard');
+        else if (userRole === 'Employee') router.replace('/dashboard');
+        else router.replace('/login');
       }
     }
-  }, []);
+  }, [loading, router]);
 
   const initials = user.name
     ? user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
     : 'PM';
 
-  // ✅ PM ke liye nav items – sirf yeh 5
   const navItems = [
     { name: 'Dashboard', path: '/pm-dashboard', icon: 'fa-chart-pie' },
     { name: 'Attendance', path: '/pm-attendance', icon: 'fa-clipboard-list' },
@@ -40,11 +65,15 @@ export default function PMLayout({ children }) {
     localStorage.removeItem('token');
     localStorage.removeItem('userData');
     localStorage.removeItem('userRole');
-    router.push('/');
+    router.push('/login');
   };
 
+  if (loading) {
+    return null;
+  }
+
   return (
-    <div className="hr-layout"> {/* same CSS class, ya aap PM ke liye alag bana sakte hain */}
+    <div className="hr-layout">
       <div className="hr-body">
         <aside className="hr-sidebar">
           <div className="sidebar-profile">

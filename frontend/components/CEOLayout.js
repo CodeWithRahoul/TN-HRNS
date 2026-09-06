@@ -3,24 +3,55 @@ import { useState, useEffect } from 'react';
 
 export default function CEOLayout({ children }) {
   const router = useRouter();
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState({ name: 'CEO User', role: 'CEO' });
 
   useEffect(() => {
-    const savedData = localStorage.getItem('userData');
-    if (savedData) {
-      try {
-        const parsed = JSON.parse(savedData);
-        if (parsed && parsed.name) {
-          setUser({
-            name: parsed.name,
-            role: localStorage.getItem('userRole') || 'CEO'
-          });
-        }
-      } catch (err) {
-        console.error("Error parsing user data:", err);
+    // Check if user is logged in
+    const userData = localStorage.getItem('userData');
+    const userRole = localStorage.getItem('userRole');
+
+    if (!userData || !userRole) {
+      // Not logged in – redirect to login
+      router.replace('/login');
+      return;
+    }
+
+    try {
+      const parsed = JSON.parse(userData);
+      if (parsed && parsed.name) {
+        setUser({
+          name: parsed.name,
+          role: userRole || 'CEO'
+        });
+      } else {
+        router.replace('/login');
+        return;
+      }
+    } catch (err) {
+      console.error("Error parsing user data:", err);
+      router.replace('/login');
+      return;
+    }
+
+    // If we reach here, user is authenticated
+    setLoading(false);
+  }, [router]);
+
+  // Optional: Also check role-based access – if userRole is not CEO, redirect to appropriate dashboard
+  useEffect(() => {
+    if (!loading) {
+      const userRole = localStorage.getItem('userRole');
+      if (userRole !== 'CEO') {
+        // If user is not CEO, redirect to their own dashboard
+        if (userRole === 'HR') router.replace('/hr-dashboard');
+        else if (userRole === 'PM') router.replace('/pm-dashboard');
+        else if (userRole === 'FD') router.replace('/fd-dashboard');
+        else if (userRole === 'Employee') router.replace('/dashboard');
+        else router.replace('/login');
       }
     }
-  }, []);
+  }, [loading, router]);
 
   const initials = user.name
     ? user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
@@ -31,16 +62,22 @@ export default function CEOLayout({ children }) {
     { name: 'Projects', path: '/ceo-projects', icon: 'fa-project-diagram' },
     { name: 'Attendance', path: '/ceo-attendance', icon: 'fa-clipboard-list' },
     { name: 'Leave management', path: '/ceo-leave-management', icon: 'fa-clock' },
-    { name: 'Hiring approvals', path: '/ceo-hiring-approvals', icon: 'fa-user-plus' }, // ✅ NEW
+    { name: 'Hiring approvals', path: '/ceo-hiring-approvals', icon: 'fa-user-plus' },
     { name: 'Internal communication', path: '/ceo-internal-communication', icon: 'fa-comments' },
+    { name: 'Announcements', path: '/ceo-announcements', icon: 'fa-bullhorn' },
   ];
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userData');
     localStorage.removeItem('userRole');
-    router.push('/');
+    router.push('/login');
   };
+
+  // Show nothing while checking authentication
+  if (loading) {
+    return null; // or a loading spinner
+  }
 
   return (
     <div className="hr-layout">

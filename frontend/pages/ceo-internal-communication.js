@@ -3,11 +3,10 @@ import CEOLayout from '@/components/CEOLayout';
 import CEOPageLayout from '@/components/CEOPageLayout';
 
 export default function CEOInternalCommunication() {
-  const [activeTab, setActiveTab] = useState('groupChats'); // 'seniors' | 'groupChats' | 'teamMembers'
+  const [activeTab, setActiveTab] = useState('groupChats'); // 'seniors' | 'groupChats' | 'juniorEmployees'
   const [searchQuery, setSearchQuery] = useState('');
   const [messageText, setMessageText] = useState('');
   const [activeConversationId, setActiveConversationId] = useState('group-nexovate');
-  const [expandedProjects, setExpandedProjects] = useState({ nexovate: true, tnhrms: false, bonappetit: false });
   const messagesEndRef = useRef(null);
 
   const colors = {
@@ -26,60 +25,31 @@ export default function CEOInternalCommunication() {
   };
 
   const genericMessages = [
-    { id: 1, from: 'them', text: "I've followed the layout, colors, typography, and spacing from Figma. There are a few small differences because of responsiveness.", time: '8:00 AM', fromMe: false },
-    { id: 2, from: 'me', text: 'That\'s fine. Are there any blockers at the moment?', time: '8:30 AM', fromMe: true },
-    { id: 3, from: 'them', text: "I'm waiting for the final API endpoints for the user data and project details. For now, I'm using dummy data.", time: '9:00 AM', fromMe: false },
-    { id: 4, from: 'me', text: 'Okay. The backend team could provide those soon. Can you make sure the frontend is ready?', time: '9:30 AM', fromMe: true },
+    { id: 1, from: 'me', text: 'Are we fully staffed for the engineering pod yet? That was our biggest bottleneck.', time: '8:00 AM', fromMe: true },
+    { id: 2, from: 'them', text: "We're almost there. We extended offers to two senior devs yesterday, one accepted this morning, and the second asked for until end of day to review the details.", time: '8:30 AM', fromMe: false },
+    { id: 3, from: 'me', text: "Perfect. If they need a quick call with me to close, let me know. What about internal transfers from product?", time: '9:00 AM', fromMe: true },
+    { id: 4, from: 'them', text: "All settled. Handover plans are in place, and they'll officially transition over next Monday.", time: '9:30 AM', fromMe: false },
   ];
 
-  // ─── Seniors ────────────────────────────────────────────────────────
+  // ─── Seniors (Leaderships) ─────────────────────────────────────────
   const seniors = [
-    { id: 'senior-ceo', initials: 'CEO', color: '#0F766E', name: 'CEO', subtitle: '' },
-    { id: 'senior-hr', initials: 'HR', color: '#A0522D', name: 'HR', subtitle: '' },
+    { id: 'senior-cto', initials: 'CTO', color: '#3F3DA0', name: 'CTO' },
+    { id: 'senior-cfo', initials: 'CFO', color: '#5B4FBF', name: 'CFO' },
+    { id: 'senior-hr', initials: 'HR', color: '#A0522D', name: 'HR' },
   ];
 
   // ─── Group Chats ────────────────────────────────────────────────────
   const groupChats = [
-    { id: 'group-nexovate', initials: 'N', color: '#3F3DA0', name: 'Nexovate', members: 5, subtitle: '' },
-    { id: 'group-tnhrms', initials: 'T', color: '#2B6FC0', name: 'TN-HRMS', members: 6, subtitle: '' },
+    { id: 'group-nexovate', initials: 'N', color: '#3F3DA0', name: 'Nexovate', members: 5 },
+    { id: 'group-tnhrms', initials: 'T', color: '#2B6FC0', name: 'TN-HRMS', members: 6 },
   ];
 
-  // ─── Team Members (grouped by project) ─────────────────────────────
-  const projectGroups = [
-    {
-      projectId: 'nexovate',
-      projectName: 'Nexovate',
-      projectLabel: 'Portal',
-      avatarInitials: 'N',
-      avatarColor: '#3F3DA0',
-      members: [
-        { id: 'member-ba', initials: 'BA', color: '#3F3DA0', name: 'Bilal ahmed', role: 'Project manager' },
-        { id: 'member-tr', initials: 'TR', color: '#2B6FC0', name: 'Tehreem raja', role: 'Backend dev' },
-        { id: 'member-ar', initials: 'AR', color: '#2FBF71', name: 'Abdul rehman', role: 'Team lead' },
-        { id: 'member-sk', initials: 'SK', color: '#E8483E', name: 'Sara kareem', role: 'UI/UX designer' },
-      ],
-    },
-    {
-      projectId: 'tnhrms',
-      projectName: 'TN-HRMS',
-      projectLabel: 'Portal',
-      avatarInitials: 'T',
-      avatarColor: '#2B6FC0',
-      members: [
-        { id: 'member-tnhrms-ba', initials: 'BA', color: '#3F3DA0', name: 'Bilal ahmed', role: 'Project manager' },
-        { id: 'member-tnhrms-sk', initials: 'SK', color: '#E8483E', name: 'Sara kareem', role: 'UI/UX designer' },
-      ],
-    },
-    {
-      projectId: 'bonappetit',
-      projectName: 'Bon appetit',
-      projectLabel: 'Web application',
-      avatarInitials: 'B',
-      avatarColor: '#2FBF71',
-      members: [
-        { id: 'member-bon-ba', initials: 'BA', color: '#3F3DA0', name: 'Bilal ahmed', role: 'Project manager' },
-      ],
-    },
+  // ─── Junior Employees (flat list) ──────────────────────────────────
+  const juniorEmployees = [
+    { id: 'member-sk', initials: 'SK', color: '#E8483E', name: 'Sara kareem', role: 'Frontend developer' },
+    { id: 'member-ar', initials: 'AR', color: '#2FBF71', name: 'Abdul rehman', role: 'Backend developer' },
+    { id: 'member-ba', initials: 'BA', color: '#A0522D', name: 'Bilal ahmed', role: 'UI/ux designer' },
+    { id: 'member-zr', initials: 'ZR', color: '#2B6FC0', name: 'Zara raza', role: 'Project manager' },
   ];
 
   // ─── Build a flat lookup of every conversation (avatar/name/subtitle/messages) ─
@@ -87,20 +57,14 @@ export default function CEOInternalCommunication() {
     const map = {};
     seniors.forEach((s) => { map[s.id] = genericMessages.map((m) => ({ ...m })); });
     groupChats.forEach((g) => { map[g.id] = genericMessages.map((m) => ({ ...m })); });
-    projectGroups.forEach((p) => {
-      p.members.forEach((m) => { map[m.id] = genericMessages.map((mm) => ({ ...mm })); });
-    });
+    juniorEmployees.forEach((m) => { map[m.id] = genericMessages.map((mm) => ({ ...mm })); });
     return map;
   });
 
   const conversationMeta = {};
   seniors.forEach((s) => { conversationMeta[s.id] = { title: s.name, subtitle: '', initials: s.initials, color: s.color }; });
   groupChats.forEach((g) => { conversationMeta[g.id] = { title: g.name, subtitle: '', initials: g.initials, color: g.color }; });
-  projectGroups.forEach((p) => {
-    p.members.forEach((m) => {
-      conversationMeta[m.id] = { title: p.projectName, subtitle: `${m.name} . ${m.role}`, initials: m.initials, color: m.color };
-    });
-  });
+  juniorEmployees.forEach((m) => { conversationMeta[m.id] = { title: m.name, subtitle: m.role, initials: m.initials, color: m.color }; });
 
   const activeMeta = conversationMeta[activeConversationId] || conversationMeta['group-nexovate'];
   const activeMessages = messagesById[activeConversationId] || [];
@@ -133,10 +97,6 @@ export default function CEOInternalCommunication() {
       e.preventDefault();
       handleSend();
     }
-  };
-
-  const toggleProject = (projectId) => {
-    setExpandedProjects((prev) => ({ ...prev, [projectId]: !prev[projectId] }));
   };
 
   const tabPill = (label, key) => {
@@ -253,12 +213,12 @@ export default function CEOInternalCommunication() {
                 flexWrap: 'wrap',
                 marginBottom: '16px',
               }}>
-                {tabPill('Seniors', 'seniors')}
+                {tabPill('Leaderships', 'seniors')}
+                {tabPill('Junior employees', 'juniorEmployees')}
                 {tabPill('Projects group chats', 'groupChats')}
-                {tabPill('Projects team members', 'teamMembers')}
               </div>
 
-              {/* SENIORS */}
+              {/* LEADERSHIPS (Seniors) */}
               {activeTab === 'seniors' && (
                 <div>
                   <div style={{
@@ -281,6 +241,37 @@ export default function CEOInternalCommunication() {
                     >
                       {avatarCircle(s.initials, s.color)}
                       <span style={{ fontSize: '13.5px', fontWeight: 600, color: colors.textDark }}>{s.name}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* JUNIOR EMPLOYEES (flat list) */}
+              {activeTab === 'juniorEmployees' && (
+                <div>
+                  <div style={{
+                    fontSize: '11px',
+                    fontWeight: 700,
+                    color: colors.textDark,
+                    letterSpacing: '0.5px',
+                    textTransform: 'uppercase',
+                    paddingBottom: '8px',
+                    borderBottom: `1px solid ${colors.border}`,
+                    marginBottom: '10px',
+                  }}>
+                    Junior employees
+                  </div>
+                  {juniorEmployees.map((m) => (
+                    <div
+                      key={m.id}
+                      onClick={() => setActiveConversationId(m.id)}
+                      style={rowStyle(activeConversationId === m.id)}
+                    >
+                      {avatarCircle(m.initials, m.color)}
+                      <div>
+                        <div style={{ fontSize: '13.5px', fontWeight: 600, color: colors.textDark }}>{m.name}</div>
+                        <div style={{ fontSize: '11.5px', color: colors.textMuted }}>{m.role}</div>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -314,70 +305,6 @@ export default function CEOInternalCommunication() {
                       </div>
                     </div>
                   ))}
-                </div>
-              )}
-
-              {/* PROJECTS TEAM MEMBERS */}
-              {activeTab === 'teamMembers' && (
-                <div>
-                  <div style={{
-                    fontSize: '11px',
-                    fontWeight: 700,
-                    color: colors.textDark,
-                    letterSpacing: '0.5px',
-                    textTransform: 'uppercase',
-                    paddingBottom: '8px',
-                    borderBottom: `1px solid ${colors.border}`,
-                    marginBottom: '10px',
-                  }}>
-                    Projects team members
-                  </div>
-                  {projectGroups.map((p) => {
-                    const isExpanded = !!expandedProjects[p.projectId];
-                    return (
-                      <div key={p.projectId} style={{ marginBottom: '6px' }}>
-                        <div
-                          onClick={() => toggleProject(p.projectId)}
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '10px',
-                            padding: '8px 10px',
-                            borderRadius: '8px',
-                            cursor: 'pointer',
-                            background: colors.bg,
-                          }}
-                        >
-                          {avatarCircle(p.avatarInitials, p.avatarColor)}
-                          <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: '13.5px', fontWeight: 600, color: colors.textDark }}>{p.projectName}</div>
-                            <div style={{ fontSize: '11.5px', color: colors.textMuted }}>{p.projectLabel}</div>
-                          </div>
-                          <i className={`fas fa-chevron-${isExpanded ? 'up' : 'down'}`} style={{ fontSize: '11px', color: colors.textMuted }} />
-                        </div>
-                        {isExpanded && (
-                          <div style={{ marginTop: '2px' }}>
-                            {p.members.map((m) => (
-                              <div
-                                key={m.id}
-                                onClick={() => setActiveConversationId(m.id)}
-                                style={{
-                                  ...rowStyle(activeConversationId === m.id),
-                                  paddingLeft: '18px',
-                                }}
-                              >
-                                {avatarCircle(m.initials, m.color, 28, 10.5)}
-                                <div>
-                                  <div style={{ fontSize: '13px', fontWeight: 600, color: colors.textDark }}>{p.projectName}</div>
-                                  <div style={{ fontSize: '11.5px', color: colors.textMuted }}>{m.name} . {m.role}</div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
                 </div>
               )}
             </div>
@@ -459,7 +386,7 @@ export default function CEOInternalCommunication() {
                         {msg.time}
                       </div>
                     </div>
-                    {msg.fromMe && avatarCircle('CEO', colors.primary, 26, 9.5)}
+                    {msg.fromMe && avatarCircle('SA', colors.primary, 26, 9.5)}
                   </div>
                 ))}
                 <div ref={messagesEndRef} />
@@ -474,7 +401,7 @@ export default function CEOInternalCommunication() {
                 borderTop: `1px solid ${colors.border}`,
               }}>
                 <button
-                  aria-label="Attach file"
+                  aria-label="Voice message"
                   style={{
                     background: 'transparent',
                     border: 'none',
@@ -487,7 +414,7 @@ export default function CEOInternalCommunication() {
                     padding: '6px',
                   }}
                 >
-                  <i className="fas fa-paperclip" />
+                  <i className="fas fa-microphone" />
                 </button>
                 <div style={{
                   flex: 1,
