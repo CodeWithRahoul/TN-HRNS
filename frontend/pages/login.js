@@ -34,32 +34,39 @@ export default function Login() {
     // ─── Hardcoded credentials for testing ────────────────
     if (email === 'pm@trustnexus.com' && password === '123456') {
       localStorage.setItem('userRole', 'PM');
-      localStorage.setItem('userData', JSON.stringify({ name: 'PM User', email: 'pm@example.com' }));
+      localStorage.setItem('userData', JSON.stringify({ name: 'PM User', email: 'pm@trustnexus.com' }));
       router.push('/pm-dashboard');
       return;
     }
     if (email === 'fd@trustnexus.com' && password === '123456') {
       localStorage.setItem('userRole', 'FD');
-      localStorage.setItem('userData', JSON.stringify({ name: 'FD User', email: 'fd@example.com' }));
+      localStorage.setItem('userData', JSON.stringify({ name: 'FD User', email: 'fd@trustnexus.com' }));
       router.push('/fd-dashboard');
       return;
     }
     if (email === 'hr@trustnexus.com' && password === '123456') {
       localStorage.setItem('userRole', 'HR');
-      localStorage.setItem('userData', JSON.stringify({ name: 'HR User', email: 'hr@example.com' }));
+      localStorage.setItem('userData', JSON.stringify({ name: 'HR User', email: 'hr@trustnexus.com' }));
       router.push('/hr-dashboard');
       return;
     }
     if (email === 'employee@trustnexus.com' && password === '123456') {
       localStorage.setItem('userRole', 'Employee');
-      localStorage.setItem('userData', JSON.stringify({ name: 'Employee User', email: 'employee@example.com' }));
+      localStorage.setItem('userData', JSON.stringify({ name: 'Employee User', email: 'employee@trustnexus.com' }));
       router.push('/dashboard');
       return;
     }
     if (email === 'ceo@trustnexus.com' && password === '123456') {
       localStorage.setItem('userRole', 'CEO');
-      localStorage.setItem('userData', JSON.stringify({ name: 'CEO User', email: 'ceo@example.com' }));
+      localStorage.setItem('userData', JSON.stringify({ name: 'CEO User', email: 'ceo@trustnexus.com' }));
       router.push('/ceo-dashboard');
+      return;
+    }
+    // ✅ TL (Team Lead) added
+    if (email === 'tl@trustnexus.com' && password === '123456') {
+      localStorage.setItem('userRole', 'TL');
+      localStorage.setItem('userData', JSON.stringify({ name: 'Team Lead User', email: 'tl@trustnexus.com' }));
+      router.push('/tl-dashboard');
       return;
     }
 
@@ -70,6 +77,7 @@ export default function Login() {
       else if (role === 'PM') router.push('/pm-dashboard');
       else if (role === 'FD') router.push('/fd-dashboard');
       else if (role === 'CEO') router.push('/ceo-dashboard');
+      else if (role === 'TL') router.push('/tl-dashboard');
       else router.push('/dashboard');
     } else {
       setApiError(result.error || 'Invalid email or password. Please try again.');
@@ -97,7 +105,7 @@ export default function Login() {
           <div style={{ marginBottom: '16px' }}>
             <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '4px' }}>Login as</label>
             <div style={{ display: 'flex', gap: '12px' }}>
-              {['Employee', 'HR', 'PM', 'FD', 'CEO'].map(r => (
+              {['Employee', 'HR', 'PM', 'FD', 'CEO', 'TL'].map(r => (
                 <button
                   key={r}
                   type="button"
