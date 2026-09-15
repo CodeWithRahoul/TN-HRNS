@@ -53,6 +53,10 @@ export default function CEOAttendance() {
     ? attendanceRecords
     : attendanceRecords.filter((r) => statusToTab[r.status] === activeTab);
 
+  // Present / Absents tabs only need Status, Date, Check in, Check out.
+  // All / Leaves tabs keep the full set of columns (Reason, Approved by, Recommend by).
+  const showAllColumns = activeTab === 'all' || activeTab === 'leaves';
+
   const statusStyles = {
     Present: { text: '#1F9254', rowBg: 'transparent' },
     Absent: { text: '#C0392B', rowBg: '#F9DEDD' },
@@ -531,9 +535,13 @@ export default function CEOAttendance() {
                     <th style={{ padding: '10px 16px', textAlign: 'left', fontSize: '13px', fontWeight: 600, color: colors.tableHeaderText }}>Date</th>
                     <th style={{ padding: '10px 16px', textAlign: 'left', fontSize: '13px', fontWeight: 600, color: colors.tableHeaderText }}>Check in</th>
                     <th style={{ padding: '10px 16px', textAlign: 'left', fontSize: '13px', fontWeight: 600, color: colors.tableHeaderText }}>Check out</th>
-                    <th style={{ padding: '10px 16px', textAlign: 'left', fontSize: '13px', fontWeight: 600, color: colors.tableHeaderText }}>Reason</th>
-                    <th style={{ padding: '10px 16px', textAlign: 'left', fontSize: '13px', fontWeight: 600, color: colors.tableHeaderText }}>Approved by</th>
-                    <th style={{ padding: '10px 16px', textAlign: 'left', fontSize: '13px', fontWeight: 600, color: colors.tableHeaderText }}>Recommend by</th>
+                    {showAllColumns && (
+                      <>
+                        <th style={{ padding: '10px 16px', textAlign: 'left', fontSize: '13px', fontWeight: 600, color: colors.tableHeaderText }}>Reason</th>
+                        <th style={{ padding: '10px 16px', textAlign: 'left', fontSize: '13px', fontWeight: 600, color: colors.tableHeaderText }}>Approved by</th>
+                        <th style={{ padding: '10px 16px', textAlign: 'left', fontSize: '13px', fontWeight: 600, color: colors.tableHeaderText }}>Recommend by</th>
+                      </>
+                    )}
                   </tr>
                 </thead>
                 <tbody>
@@ -545,9 +553,13 @@ export default function CEOAttendance() {
                         <td style={{ padding: '12px 16px', fontSize: '14px', color: colors.textDark }}>{record.date}</td>
                         <td style={{ padding: '12px 16px', fontSize: '14px', color: colors.textDark }}>{record.checkIn}</td>
                         <td style={{ padding: '12px 16px', fontSize: '14px', color: colors.textDark }}>{record.checkOut}</td>
-                        <td style={{ padding: '12px 16px', fontSize: '14px', color: colors.textDark }}>{record.reason}</td>
-                        <td style={{ padding: '12px 16px', fontSize: '14px', color: colors.textDark }}>{record.approvedBy}</td>
-                        <td style={{ padding: '12px 16px', fontSize: '14px', color: colors.textDark }}>{record.recommendBy}</td>
+                        {showAllColumns && (
+                          <>
+                            <td style={{ padding: '12px 16px', fontSize: '14px', color: colors.textDark }}>{record.reason}</td>
+                            <td style={{ padding: '12px 16px', fontSize: '14px', color: colors.textDark }}>{record.approvedBy}</td>
+                            <td style={{ padding: '12px 16px', fontSize: '14px', color: colors.textDark }}>{record.recommendBy}</td>
+                          </>
+                        )}
                       </tr>
                     );
                   })}
