@@ -62,11 +62,17 @@ export default function Login() {
       router.push('/ceo-dashboard');
       return;
     }
-    // ✅ TL (Team Lead) added
     if (email === 'tl@trustnexus.com' && password === '123456') {
       localStorage.setItem('userRole', 'TL');
       localStorage.setItem('userData', JSON.stringify({ name: 'Team Lead User', email: 'tl@trustnexus.com' }));
       router.push('/tl-dashboard');
+      return;
+    }
+    // ✅ CFO added
+    if (email === 'cfo@trustnexus.com' && password === '123456') {
+      localStorage.setItem('userRole', 'CFO');
+      localStorage.setItem('userData', JSON.stringify({ name: 'CFO User', email: 'cfo@trustnexus.com' }));
+      router.push('/cfo-dashboard');
       return;
     }
 
@@ -78,6 +84,7 @@ export default function Login() {
       else if (role === 'FD') router.push('/fd-dashboard');
       else if (role === 'CEO') router.push('/ceo-dashboard');
       else if (role === 'TL') router.push('/tl-dashboard');
+      else if (role === 'CFO') router.push('/cfo-dashboard');
       else router.push('/dashboard');
     } else {
       setApiError(result.error || 'Invalid email or password. Please try again.');
@@ -105,7 +112,7 @@ export default function Login() {
           <div style={{ marginBottom: '16px' }}>
             <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '4px' }}>Login as</label>
             <div style={{ display: 'flex', gap: '12px' }}>
-              {['Employee', 'HR', 'PM', 'FD', 'CEO', 'TL'].map(r => (
+              {['Employee', 'HR', 'PM', 'FD', 'CEO', 'TL', 'CFO'].map(r => (
                 <button
                   key={r}
                   type="button"

@@ -1,10 +1,10 @@
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 
-export default function CEOLayout({ children }) {
+export default function CFOLayout({ children }) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState({ name: 'CEO User', role: 'CEO' });
+  const [user, setUser] = useState({ name: 'CFO User', role: 'CFO' });
 
   useEffect(() => {
     const userData = localStorage.getItem('userData');
@@ -20,7 +20,7 @@ export default function CEOLayout({ children }) {
       if (parsed && parsed.name) {
         setUser({
           name: parsed.name,
-          role: userRole || 'CEO'
+          role: userRole || 'CFO'
         });
       } else {
         router.replace('/login');
@@ -35,15 +35,16 @@ export default function CEOLayout({ children }) {
     setLoading(false);
   }, [router]);
 
-  // Role-based access: Only CEO can access CEO pages
+  // Role-based access: Only CFO can access CFO pages
   useEffect(() => {
     if (!loading) {
       const userRole = localStorage.getItem('userRole');
-      if (userRole !== 'CEO') {
+      if (userRole !== 'CFO') {
         if (userRole === 'HR') router.replace('/hr-dashboard');
         else if (userRole === 'PM') router.replace('/pm-dashboard');
         else if (userRole === 'FD') router.replace('/fd-dashboard');
         else if (userRole === 'TL') router.replace('/tl-dashboard');
+        else if (userRole === 'CEO') router.replace('/ceo-dashboard');
         else if (userRole === 'Employee') router.replace('/dashboard');
         else router.replace('/login');
       }
@@ -52,17 +53,16 @@ export default function CEOLayout({ children }) {
 
   const initials = user.name
     ? user.name.split(' ').map(n => n[0]).join('').slice(0, 2).toUpperCase()
-    : 'CEO';
+    : 'CFO';
 
   const navItems = [
-    { name: 'Dashboard', path: '/ceo-dashboard', icon: 'fa-chart-pie' },
-    { name: 'Projects', path: '/ceo-projects', icon: 'fa-project-diagram' },
-    { name: 'Attendance', path: '/ceo-attendance', icon: 'fa-clipboard-list' },
-    { name: 'Leave management', path: '/ceo-leave-management', icon: 'fa-clock' },
-    { name: 'Hiring approvals', path: '/ceo-hiring-approvals', icon: 'fa-user-plus' },
-    { name: 'Internal communication', path: '/ceo-internal-communication', icon: 'fa-comments' },
-    { name: 'Announcements', path: '/ceo-announcements', icon: 'fa-bullhorn' },
-    { name: 'Reports', path: '/ceo-reports', icon: 'fa-chart-line' }, 
+    { name: 'Dashboard', path: '/cfo-dashboard', icon: 'fa-chart-pie' },
+    { name: 'Reports', path: '/cfo-reports', icon: 'fa-chart-line' },
+    { name: 'Salary', path: '/cfo-salary', icon: 'fa-money-bill-wave' }, // ✅ NEW
+    { name: 'Attendance', path: '/cfo-attendance', icon: 'fa-clipboard-list' },
+    { name: 'Leave request', path: '/cfo-leave-management', icon: 'fa-clock' }, // ✅ renamed
+    { name: 'Internal communication', path: '/cfo-internal-communication', icon: 'fa-comments' },
+    { name: 'Announcements', path: '/cfo-announcements', icon: 'fa-bullhorn' },
   ];
 
   const handleLogout = () => {
@@ -115,7 +115,7 @@ export default function CEOLayout({ children }) {
                 justifyContent: 'center',
                 gap: '8px'
               }}
-              onClick={() => router.push('/ceo-internal-communication')}
+              onClick={() => router.push('/cfo-internal-communication')}
             >
               <i className="fas fa-plus-circle"></i> Create Task
             </button>
