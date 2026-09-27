@@ -23,10 +23,7 @@ export default function Candidates() {
   const [positionFilter, setPositionFilter] = useState(null);
   const [skillsFilter, setSkillsFilter] = useState(null);
 
-  // ─── statusOptions is now derived from the updated data ───────
   const statusOptions = [...new Set(DEMO_CANDIDATES.map(c => c.status || 'Applied'))];
-  // This will give: ['Selected', 'Rejected', 'Applied', 'Waiting list']
-
   const positionOptions = [...new Set(DEMO_CANDIDATES.map((c) => c.position))];
   const skillsOptions = [...new Set(DEMO_CANDIDATES.flatMap((c) => c.skills))];
 
@@ -40,16 +37,15 @@ export default function Candidates() {
     skillText: '#007A7C',
   };
 
-  // ─── statusStyles map now includes 'Waiting list' ─────────────
   const statusStyles = (status) => {
     const map = {
-      Selected:     { bg: '#DFF6E5', color: '#1E8E3E' },
-      Rejected:     { bg: '#FDE2E4', color: '#D32F2F' },
-      Applied:      { bg: '#E3F2FD', color: '#1565C0' },
+      Selected:       { bg: '#DFF6E5', color: '#1E8E3E' },
+      Rejected:       { bg: '#FDE2E4', color: '#D32F2F' },
+      Applied:        { bg: '#E3F2FD', color: '#1565C0' },
       'Waiting list': { bg: '#FFF3D6', color: '#B8860B' },
-      Interviewing: { bg: '#EDE7FB', color: '#6B3FD4' },
-      Shortlisted:  { bg: '#FFF3D6', color: '#B8860B' },
-      Submitted:    { bg: '#E3F2FD', color: '#1565C0' },
+      Interviewing:   { bg: '#EDE7FB', color: '#6B3FD4' },
+      Shortlisted:    { bg: '#FFF3D6', color: '#B8860B' },
+      Submitted:      { bg: '#E3F2FD', color: '#1565C0' },
     };
     return map[status] || { bg: '#EEEEEE', color: '#555555' };
   };
@@ -269,11 +265,17 @@ export default function Candidates() {
                         </span>
                       </td>
                       <td style={{ padding: '12px 8px' }}>
-                        <button style={{
-                          background: 'white', border: `1px solid ${colors.border}`, color: colors.textDark,
-                          padding: '5px 16px', borderRadius: '8px', cursor: 'pointer',
-                          fontFamily: "'Poppins', sans-serif", fontSize: '12px'
-                        }} onClick={(e) => e.stopPropagation()}>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedCandidate(c);
+                          }}
+                          style={{
+                            background: 'white', border: `1px solid ${colors.border}`, color: colors.textDark,
+                            padding: '5px 16px', borderRadius: '8px', cursor: 'pointer',
+                            fontFamily: "'Poppins', sans-serif", fontSize: '12px'
+                          }}
+                        >
                           Review
                         </button>
                       </td>

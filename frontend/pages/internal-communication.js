@@ -171,7 +171,6 @@ export default function InternalCommunication() {
     },
   ]);
 
-  // First conversation id for each group, used to auto-select on tab switch
   const firstIdByGroup = groups.reduce((acc, g) => {
     const first = conversations.find((c) => c.group === g);
     acc[g] = first ? first.id : null;
@@ -222,83 +221,6 @@ export default function InternalCommunication() {
     <HRLayout>
       <HRPageLayout title="Internal Communication">
         <div style={{ fontFamily: "'Poppins', sans-serif" }}>
-          {/* ─── Top bar: title + search ─────────────────────── */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: '14px',
-              marginBottom: '22px',
-            }}
-          >
-            <h1 style={{ margin: 0, fontSize: '22px', fontWeight: 700, color: colors.textDark }}>
-              Internal Communication
-            </h1>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  background: colors.cardBg,
-                  border: `1px solid ${colors.border}`,
-                  borderRadius: '10px',
-                  padding: '9px 14px',
-                  minWidth: '260px',
-                }}
-              >
-                <span style={{ color: colors.textMuted, marginRight: '8px', fontSize: '14px' }}>🔍</span>
-                <input
-                  type="text"
-                  placeholder="Search projects, tasks, or clients..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  style={{
-                    border: 'none',
-                    outline: 'none',
-                    fontSize: '13.5px',
-                    color: colors.textDark,
-                    width: '100%',
-                    fontFamily: "'Poppins', sans-serif",
-                    background: 'transparent',
-                  }}
-                />
-                <button
-                  style={{
-                    background: colors.primary,
-                    color: '#fff',
-                    border: 'none',
-                    borderRadius: '8px',
-                    padding: '6px 14px',
-                    fontSize: '12.5px',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    marginLeft: '8px',
-                    fontFamily: "'Poppins', sans-serif",
-                  }}
-                >
-                  Search
-                </button>
-              </div>
-              <div
-                style={{
-                  width: '38px',
-                  height: '38px',
-                  borderRadius: '50%',
-                  background: colors.lightTeal,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '16px',
-                  color: colors.primary,
-                }}
-              >
-                📶
-              </div>
-            </div>
-          </div>
-
           {/* ─── Group tabs ───────────────────────────────────── */}
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '22px' }}>
             <div

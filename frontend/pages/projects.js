@@ -5,50 +5,11 @@ import CreateProjectModal from '@/components/CreateProjectModal';
 
 export default function Projects() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedProject, setSelectedProject] = useState(null); // null = grid view
-  const [selectedDeliverable, setSelectedDeliverable] = useState(null); // null = no deliverable modal
+  const [selectedProjectId, setSelectedProjectId] = useState(null); // null = grid view
+  const [selectedDeliverable, setSelectedDeliverable] = useState(null);
+  const [reassignTarget, setReassignTarget] = useState(null); // { index, member } when reassigning
 
-  const handleCreateProject = (projectData) => {
-    console.log('New Project:', projectData);
-    setIsModalOpen(false);
-  };
-
-  const handleViewProject = (projectId) => {
-    const project = projects.find((p) => p.id === projectId);
-    setSelectedProject(project);
-  };
-
-  const handleBackToProjects = () => {
-    setSelectedProject(null);
-  };
-
-  const handleViewDeliverable = (member) => {
-    setSelectedDeliverable(member);
-  };
-
-  const handleCloseDeliverable = () => {
-    setSelectedDeliverable(null);
-  };
-
-  const colors = {
-    primary: '#00A19A',
-    border: '#e2e8e8',
-    textDark: '#1A1A1A',
-    textGray: '#666666',
-    textMuted: '#8a8f98',
-    bg: '#F4FBFB',
-    cardBg: '#FFFFFF',
-    tableHeaderBg: '#B8BFC6',
-  };
-
-  const avatarColors = {
-    'BA': '#3B5BDB',
-    'SK': '#F4B400',
-    'TR': '#2FBF71',
-    'AR': '#E8483E',
-  };
-
-  const projects = [
+  const [projects, setProjects] = useState([
     {
       id: 1,
       title: 'Nexovate Portal',
@@ -82,7 +43,100 @@ export default function Projects() {
         { initials: 'AR', name: 'Abdul rehman', role: 'Backend developer', deliverable: 'Form handling', figmaLink: '', document: { name: 'Form handling.pdf', size: '540 KB' } },
       ],
     },
+  ]);
+
+  // Pool of employees available for reassignment
+  const availableEmployees = [
+    { initials: 'MH', name: 'Maryam Hassan', role: 'PM' },
+    { initials: 'ZK', name: 'Zain Khan', role: 'UI/UX designer' },
+    { initials: 'FN', name: 'Fatima Noor', role: 'Frontend developer' },
+    { initials: 'UR', name: 'Usman Raza', role: 'Backend developer' },
+    { initials: 'AS', name: 'Ali Saeed', role: 'QA engineer' },
+    { initials: 'HK', name: 'Hamza Khalid', role: 'Frontend developer' },
   ];
+
+  const selectedProject = projects.find((p) => p.id === selectedProjectId) || null;
+
+  const handleCreateProject = (projectData) => {
+    console.log('New Project:', projectData);
+    setIsModalOpen(false);
+  };
+
+  const handleViewProject = (projectId) => {
+    setSelectedProjectId(projectId);
+  };
+
+  const handleBackToProjects = () => {
+    setSelectedProjectId(null);
+  };
+
+  const handleViewDeliverable = (member) => {
+    setSelectedDeliverable(member);
+  };
+
+  const handleCloseDeliverable = () => {
+    setSelectedDeliverable(null);
+  };
+
+  const handleOpenReassign = (index, member) => {
+    setReassignTarget({ index, member });
+  };
+
+  const handleCloseReassign = () => {
+    setReassignTarget(null);
+  };
+
+  const handleReassign = (newEmployee) => {
+    if (!reassignTarget || !selectedProject) return;
+    const { index } = reassignTarget;
+
+    setProjects((prev) =>
+      prev.map((p) =>
+        p.id === selectedProject.id
+          ? {
+              ...p,
+              team: p.team.map((m, i) =>
+                i === index
+                  ? {
+                      ...newEmployee,
+                      // keep the deliverable slot, reset deliverable artifacts
+                      deliverable: m.deliverable,
+                      figmaLink: '',
+                      document: null,
+                    }
+                  : m
+              ),
+            }
+          : p
+      )
+    );
+
+    setReassignTarget(null);
+  };
+
+  const colors = {
+    primary: '#00A19A',
+    border: '#e2e8e8',
+    textDark: '#1A1A1A',
+    textGray: '#666666',
+    textMuted: '#8a8f98',
+    bg: '#F4FBFB',
+    cardBg: '#FFFFFF',
+    tableHeaderBg: '#B8BFC6',
+  };
+
+  const avatarColors = {
+    'BA': '#3B5BDB',
+    'SK': '#F4B400',
+    'TR': '#2FBF71',
+    'AR': '#E8483E',
+    'MH': '#9C27B0',
+    'ZK': '#00A19A',
+    'FN': '#FF7043',
+    'UR': '#5C6BC0',
+    'AS': '#26A69A',
+    'HK': '#8E24AA',
+  };
 
   // ---------- DETAIL VIEW ----------
   if (selectedProject) {
@@ -117,7 +171,7 @@ export default function Projects() {
               border: `1px solid ${colors.border}`,
               borderRadius: '16px',
               padding: '24px',
-              maxWidth: '520px',
+              maxWidth: '620px',
             }}
           >
             <h3 style={{
@@ -207,25 +261,49 @@ export default function Projects() {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'space-between',
+                    gap: '10px',
                   }}>
                     <span style={{ fontSize: '13px', color: colors.textDark }}>
                       {member.deliverable}
                     </span>
-                    <button
-                      onClick={() => handleViewDeliverable(member)}
-                      style={{
-                        background: 'transparent',
-                        color: colors.primary,
-                        border: 'none',
-                        fontSize: '13px',
-                        fontWeight: 600,
-                        cursor: 'pointer',
-                        fontFamily: "'Poppins', sans-serif",
-                        padding: 0,
-                      }}
-                    >
-                      View
-                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                      <button
+                        onClick={() => handleOpenReassign(idx, member)}
+                        title="Reassign this position"
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '5px',
+                          background: '#EAF7F6',
+                          color: colors.primary,
+                          border: `1px solid ${colors.primary}33`,
+                          borderRadius: '6px',
+                          padding: '4px 10px',
+                          fontSize: '12px',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          fontFamily: "'Poppins', sans-serif",
+                        }}
+                      >
+                        <i className="fas fa-user-pen" style={{ fontSize: '11px' }} />
+                        Change
+                      </button>
+                      <button
+                        onClick={() => handleViewDeliverable(member)}
+                        style={{
+                          background: 'transparent',
+                          color: colors.primary,
+                          border: 'none',
+                          fontSize: '13px',
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          fontFamily: "'Poppins', sans-serif",
+                          padding: 0,
+                        }}
+                      >
+                        View
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -233,6 +311,7 @@ export default function Projects() {
           </div>
         </HRPageLayout>
 
+        {/* ---------- DELIVERABLE MODAL ---------- */}
         {selectedDeliverable && (
           <div
             onClick={handleCloseDeliverable}
@@ -258,7 +337,6 @@ export default function Projects() {
                 boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
               }}
             >
-              {/* Close Button */}
               <button
                 onClick={handleCloseDeliverable}
                 style={{
@@ -291,7 +369,6 @@ export default function Projects() {
                 Deliverable
               </h3>
 
-              {/* Figma Link */}
               <div style={{ marginBottom: '18px' }}>
                 <label style={{
                   display: 'block',
@@ -314,7 +391,6 @@ export default function Projects() {
                 </div>
               </div>
 
-              {/* Document */}
               <div>
                 <label style={{
                   display: 'block',
@@ -367,6 +443,148 @@ export default function Projects() {
             </div>
           </div>
         )}
+
+        {/* ---------- REASSIGN EMPLOYEE MODAL ---------- */}
+        {reassignTarget && (
+          <div
+            onClick={handleCloseReassign}
+            style={{
+              position: 'fixed',
+              inset: 0,
+              background: 'rgba(20, 30, 30, 0.35)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              zIndex: 1000,
+            }}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                background: colors.cardBg,
+                borderRadius: '16px',
+                padding: '28px',
+                width: '420px',
+                maxWidth: '90vw',
+                position: 'relative',
+                boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
+              }}
+            >
+              <button
+                onClick={handleCloseReassign}
+                style={{
+                  position: 'absolute',
+                  top: '-14px',
+                  right: '-14px',
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  background: '#F5C6C6',
+                  color: '#C0392B',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '14px',
+                  boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                }}
+              >
+                <i className="fas fa-times" />
+              </button>
+
+              <h3 style={{
+                fontSize: '18px',
+                fontWeight: 700,
+                color: colors.textDark,
+                margin: '0 0 4px 0',
+              }}>
+                Reassign Position
+              </h3>
+              <p style={{
+                fontSize: '13px',
+                color: colors.textGray,
+                margin: '0 0 20px 0',
+              }}>
+                Replacing <strong style={{ color: colors.textDark }}>{reassignTarget.member.name}</strong> ({reassignTarget.member.role}) on
+                {' '}<strong style={{ color: colors.textDark }}>{reassignTarget.member.deliverable}</strong>
+              </p>
+
+              <label style={{
+                display: 'block',
+                fontSize: '12px',
+                fontWeight: 600,
+                color: colors.textGray,
+                textTransform: 'uppercase',
+                letterSpacing: '0.4px',
+                marginBottom: '10px',
+              }}>
+                Select replacement
+              </label>
+
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+                maxHeight: '280px',
+                overflowY: 'auto',
+              }}>
+                {availableEmployees.map((emp) => (
+                  <button
+                    key={emp.initials}
+                    onClick={() => handleReassign(emp)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      padding: '10px 14px',
+                      background: '#fff',
+                      border: `1px solid ${colors.border}`,
+                      borderRadius: '10px',
+                      cursor: 'pointer',
+                      textAlign: 'left',
+                      fontFamily: "'Poppins', sans-serif",
+                      transition: 'all 0.15s ease',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = colors.primary;
+                      e.currentTarget.style.background = '#F4FBFB';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = colors.border;
+                      e.currentTarget.style.background = '#fff';
+                    }}
+                  >
+                    <div style={{
+                      width: '34px',
+                      height: '34px',
+                      borderRadius: '50%',
+                      background: avatarColors[emp.initials] || '#ccc',
+                      color: '#fff',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}>
+                      {emp.initials}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: '13px', fontWeight: 600, color: colors.textDark }}>
+                        {emp.name}
+                      </div>
+                      <div style={{ fontSize: '12px', color: colors.textGray }}>
+                        {emp.role}
+                      </div>
+                    </div>
+                    <i className="fas fa-chevron-right" style={{ fontSize: '11px', color: colors.textMuted }} />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </HRLayout>
     );
   }
@@ -375,7 +593,6 @@ export default function Projects() {
   return (
     <HRLayout>
       <HRPageLayout title="Projects">
-        {/* Create Project Button */}
         <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '20px' }}>
           <button
             onClick={() => setIsModalOpen(true)}
@@ -399,7 +616,6 @@ export default function Projects() {
           </button>
         </div>
 
-        {/* Projects Grid */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(2, 1fr)',
@@ -465,7 +681,6 @@ export default function Projects() {
                 ))}
               </div>
 
-              {/* View Button */}
               <div style={{
                 marginTop: '16px',
                 paddingTop: '14px',

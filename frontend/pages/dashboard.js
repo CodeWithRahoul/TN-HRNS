@@ -51,6 +51,13 @@ export default function Dashboard() {
     fetchData();
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userData');
+    localStorage.removeItem('userRole');
+    router.push('/login');
+  };
+
   if (loading) return (
     <div style={{ minHeight: '100vh', background: '#effbfb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
       <Spinner />
@@ -127,12 +134,34 @@ export default function Dashboard() {
                 Here's what's happening with your applications.
               </p>
             </div>
-            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
               <button className="btn btn-primary" onClick={() => router.push('/apply')}>
                 <i className="fas fa-plus" style={{ marginRight: '6px' }}></i> New Application
               </button>
               <button className="btn btn-ghost" onClick={() => router.push('/track')}>
                 <i className="fas fa-search" style={{ marginRight: '6px' }}></i> Track Status
+              </button>
+              {/* ✅ Logout button added */}
+              <button
+                onClick={handleLogout}
+                className="btn btn-ghost"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  color: '#E8483E',
+                  border: '1px solid #E8483E',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = '#E8483E';
+                  e.currentTarget.style.color = '#fff';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.color = '#E8483E';
+                }}
+              >
+                <i className="fas fa-sign-out-alt"></i> Logout
               </button>
             </div>
           </div>

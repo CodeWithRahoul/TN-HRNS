@@ -112,7 +112,7 @@ export default function Login() {
           <div style={{ marginBottom: '16px' }}>
             <label style={{ fontSize: '0.8rem', fontWeight: 600, display: 'block', marginBottom: '4px' }}>Login as</label>
             <div style={{ display: 'flex', gap: '12px' }}>
-              {['Employee', 'HR', 'PM', 'FD', 'CEO', 'TL', 'CFO'].map(r => (
+              {['Candidates', 'HR', 'PM', 'FD', 'CEO', 'TL', 'CFO'].map(r => (
                 <button
                   key={r}
                   type="button"
@@ -126,8 +126,7 @@ export default function Login() {
             </div>
           </div>
 
-          <button className="auth-google"><i className="fab fa-google"></i> Continue with Google</button>
-          <div className="auth-or">OR EMAIL</div>
+          
 
           <Input
             label="Email Address"
@@ -166,7 +165,9 @@ export default function Login() {
           <Button variant="primary" loading={loading} onClick={handleSubmit} style={{ width: '100%' }}>
             Sign In to Account
           </Button>
-
+          <div className="auth-or">OR</div>
+          <button className="auth-google"><i className="fab fa-google"></i> Continue with Google</button>
+          
           <div className="auth-switch">
             Don't have an account? <a onClick={() => router.push('/register')}>Sign Up</a>
           </div>
