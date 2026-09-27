@@ -1,20 +1,195 @@
+import { useState } from 'react';
 import CFOLayout from '@/components/CFOLayout';
 import CFOPageLayout from '@/components/CFOPageLayout';
 
+const colors = {
+  primary: '#00A19A',
+  border: '#D9D9D9',
+  headerBg: '#B3B3B3',
+  textDark: '#1A1A1A',
+  textGray: '#666666',
+  cardBg: '#FFFFFF',
+};
+
+const TABS = [
+  {
+    id: 'attendance',
+    label: 'Attendace reports',
+    column: 'ATTENDANCE',
+    rows: [
+      { period: 'Sep 2026', value: '96%', by: 'HR' },
+      { period: 'Aug 2026', value: '98%', by: 'HR' },
+      { period: 'July 2026', value: '94%', by: 'HR' },
+      { period: 'Jun 2026', value: '89%', by: 'HR' },
+      { period: 'May 2026', value: '92%', by: 'HR' },
+      { period: 'Apr 2026', value: '90%', by: 'HR' },
+    ],
+  },
+  {
+    id: 'monthly',
+    label: 'Monthly team reports',
+    column: 'COMPLETION',
+    rows: [
+      { period: 'Sep 2026', value: '96%', by: 'HR' },
+      { period: 'Aug 2026', value: '98%', by: 'HR' },
+      { period: 'July 2026', value: '94%', by: 'HR' },
+      { period: 'Jun 2026', value: '89%', by: 'HR' },
+      { period: 'May 2026', value: '91%', by: 'HR' },
+      { period: 'Apr 2026', value: '87%', by: 'HR' },
+    ],
+  },
+  {
+    id: 'hiring',
+    label: 'Hiring performance reports',
+    column: 'ROLES FILLED',
+    rows: [
+      { period: 'Sep 2026', value: '3', by: 'HR' },
+      { period: 'Aug 2026', value: '2', by: 'HR' },
+      { period: 'July 2026', value: '8', by: 'HR' },
+      { period: 'Jun 2026', value: '10', by: 'HR' },
+      { period: 'May 2026', value: '5', by: 'HR' },
+      { period: 'Apr 2026', value: '6', by: 'HR' },
+    ],
+  },
+  {
+    id: 'financial',
+    label: 'Financial reports',
+    column: 'TYPE',
+    rows: [
+      { period: 'Sep 2026', value: 'Expense summary', by: 'CFO' },
+      { period: 'Aug 2026', value: 'Expense summary', by: 'CFO' },
+      { period: 'July 2026', value: 'Expense summary', by: 'CFO' },
+      { period: 'Jun 2026', value: 'Expense summary', by: 'CFO' },
+      { period: 'May 2026', value: 'Expense summary', by: 'CFO' },
+      { period: 'Apr 2026', value: 'Expense summary', by: 'CFO' },
+    ],
+  },
+];
+
 export default function CFOReports() {
+  const [activeTab, setActiveTab] = useState('attendance');
+  const tab = TABS.find((t) => t.id === activeTab);
+
+  const handleDownload = (row) => {
+    console.log('Download report:', tab.id, row.period);
+  };
+
   return (
     <CFOLayout>
       <CFOPageLayout title="Reports">
-        <div style={{
-          background: '#fff',
-          border: '1px solid #000',
-          borderRadius: '16px',
-          padding: '40px 24px',
-          textAlign: 'center',
-        }}>
-          <i className="fas fa-chart-line" style={{ fontSize: '48px', color: '#00A19A', marginBottom: '16px' }} />
-          <h2 style={{ fontSize: '20px', fontWeight: 600, color: '#1A1A1A', margin: '0 0 8px 0' }}>Reports</h2>
-          <p style={{ margin: 0, fontSize: '14px', color: '#666' }}>Company-wide financial reports will appear here.</p>
+        {/* Tabs */}
+        <div
+          style={{
+            background: colors.cardBg,
+            border: `1px solid ${colors.border}`,
+            borderRadius: '12px',
+            padding: '10px 24px',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: '16px',
+            marginBottom: '32px',
+            overflowX: 'auto',
+          }}
+        >
+          {TABS.map((t) => {
+            const isActive = t.id === activeTab;
+            return (
+              <button
+                key={t.id}
+                onClick={() => setActiveTab(t.id)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                  padding: '6px 4px',
+                  fontSize: '13px',
+                  fontWeight: isActive ? 600 : 400,
+                  color: colors.textDark,
+                  whiteSpace: 'nowrap',
+                  borderBottom: isActive
+                    ? `3px solid ${colors.primary}`
+                    : '3px solid transparent',
+                }}
+              >
+                {t.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Table card */}
+        <div
+          style={{
+            background: colors.cardBg,
+            border: `1px solid ${colors.border}`,
+            borderRadius: '16px',
+            overflow: 'hidden',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
+          }}
+        >
+          {/* Header row */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr 1fr 140px',
+              alignItems: 'center',
+              background: colors.headerBg,
+              padding: '16px 24px',
+              fontSize: '13px',
+              fontWeight: 700,
+              letterSpacing: '0.5px',
+              color: colors.textDark,
+              textAlign: 'center',
+            }}
+          >
+            <span>PERIOD</span>
+            <span>{tab.column}</span>
+            <span>GENERATED BY</span>
+            <span />
+          </div>
+
+          {/* Scrollable body */}
+          <div style={{ maxHeight: '260px', overflowY: 'auto' }}>
+            {tab.rows.map((row, i) => (
+              <div
+                key={row.period}
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr 1fr 140px',
+                  alignItems: 'center',
+                  padding: '18px 24px',
+                  fontSize: '14px',
+                  color: colors.textDark,
+                  textAlign: 'center',
+                  borderBottom:
+                    i === tab.rows.length - 1
+                      ? 'none'
+                      : `1px solid ${colors.border}`,
+                }}
+              >
+                <span>{row.period}</span>
+                <span>{row.value}</span>
+                <span>{row.by}</span>
+                <span style={{ display: 'flex', justifyContent: 'center' }}>
+                  <button
+                    onClick={() => handleDownload(row)}
+                    style={{
+                      background: colors.cardBg,
+                      border: `1px solid ${colors.border}`,
+                      borderRadius: '6px',
+                      padding: '6px 14px',
+                      fontSize: '12px',
+                      color: colors.textDark,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Download
+                  </button>
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </CFOPageLayout>
     </CFOLayout>
